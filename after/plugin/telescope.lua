@@ -1,12 +1,18 @@
 require'telescope'.load_extension('project')
 local builtin = require('telescope.builtin')
+local path;
+if vim.loop.os_uname().sysname == "Darwin" then
+    path = "~/.config/nvim"
+else
+    path = "C:\\Users\\ELVHIL\\AppData\\Local\\nvim"
+end
 
 vim.keymap.set('n', '<leader>b', builtin.buffers, {})
 vim.keymap.set('n', '<leader>f', builtin.find_files, {})
 vim.keymap.set('n', '<leader>c', function ()
     local config = {
         hidden = true,
-        cwd = "C:\\Users\\ELVHIL\\AppData\\Local\\nvim"
+        cwd = path
     }
     builtin.find_files(config)
 end, {})

@@ -1,9 +1,18 @@
-require 'nvim-treesitter.install'.compilers = { "gcc.exe" }
+if vim.loop.os_uname().sysname == "Darwin" then
+else
+    require 'nvim-treesitter.install'.compilers = { "gcc.exe" }
+end 
+local ensure
+if vim.loop.os_uname().sysname == "Darwin" then
+    ensure = { "c", "lua", "vim", "c_sharp", "query", "http", "json" }
+else
+    ensure = { "c", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml" }
+end 
 -- local path = [[C:\Users\Elvhil\Maskinoppsett\]]
 -- vim.opt.runtimepath:append(path)
 require 'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all" (the five listed parsers should always be installed)
-    ensure_installed = { "c", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml" },
+    ensure_installed = ensure,
 
     modules = {},
     sync_install = false,
