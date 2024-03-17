@@ -1,0 +1,57 @@
+--local cmp = require 'cmp'
+
+-- cmp.setup{
+--     mapping = {
+--         ['<C-n>'] = cmp.mapping.select_next_item(),
+--         ['<C-p>'] = cmp.mapping.select_prev_item(),
+--         ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+--         ['<C-u>'] = cmp.mapping.scroll_docs(4),
+--         ['<CR>'] = cmp.mapping.confirm({
+--             behavior = cmp.ConfirmBehavior.Select,
+--             select = true,
+--         }),
+--     },
+--     sources = {
+--         { name = 'nvim_lsp'},
+--     }
+-- }
+
+----lua =vim.lsp.get_active_clients()[1
+-- --vim.keymap.set("n", "gd", vim.cmd.OmniSharpGotoDefinition);
+-- --vim.keymap.set("n", "gd", "<Plug>OmniSharpGotoDefinition");
+-- local pid = vim.fn.getpid()
+-- local omnisharp_bin = [[C:\Users\ELVHIL\OneDrive - Bane NOR\Dokumenter\Omnisharp\Omnisharp.exe]]
+
+-- require("lspconfig").omnisharp.setup{
+--     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities()),
+--     on_attach = function(client, bufnr)
+--         local options = {buffer = bufnr, remap = false}
+--         vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+--         vim.keymap.set("n", "gd", vim.lsp.buf.definition, options)
+--         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, options)
+--         vim.keymap.set("n", "K", vim.lsp.buf.hover, options)
+--         vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, options)
+--         vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, options)
+--         vim.keymap.set("n", "]d", vim.diagnostic.goto_next, options)
+--         vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, options)
+--         vim.keymap.set("n", "<leader>li", vim.lsp.buf.incoming_calls, options)
+--         vim.keymap.set("n", "<leader>lo", vim.lsp.buf.outgoing_calls, options)
+--         vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, options)
+--         vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, options)
+--         vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, options)
+--         vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, options)
+--         -- vim.keymap.set("n", "<leader>vf", ":!/usr/bin/clang-format -i --style=Microsoft " .. vim.fn.expand("%") .. "<CR>", options)
+--         -- https://github.com/OmniSharp/omnisharp-roslyn/issues/2483#issuecomment-1492605642
+--         local tokenModifiers = client.server_capabilities.semanticTokensProvider.legend.tokenModifiers
+--         for i, v in ipairs(tokenModifiers) do
+--             local tmp = string.gsub(v, ' ', '_')
+--             tokenModifiers[i] = string.gsub(tmp, '-_', '')
+--         end
+--         local tokenTypes = client.server_capabilities.semanticTokensProvider.legend.tokenTypes
+--         for i, v in ipairs(tokenTypes) do
+--             local tmp = string.gsub(v, ' ', '_')
+--             tokenTypes[i] = string.gsub(tmp, '-_', '')
+--         end
+--     end,
+--     cmd = {omnisharp_bin, "--languageserver", "--hostPID", tostring(pid)};
+-- }
