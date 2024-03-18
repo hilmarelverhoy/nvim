@@ -72,8 +72,10 @@ use {
   use('farmergreg/vim-lastplace')
   use('tmadsen/vim-compiler-plugin-for-dotnet')
   use('nvim-tree/nvim-web-devicons')
+
   use({ "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} })
   use("jay-babu/mason-nvim-dap.nvim")
+
   use { "williamboman/mason.nvim" }
   use { "williamboman/mason-lspconfig.nvim" }
   use {"neovim/nvim-lspconfig"}
@@ -103,7 +105,7 @@ use {
           vim.cmd('colorscheme nightfox')
       end
   })
-  -- use("nathom/filetype.nvim")
+  use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
 
   use {
       "rest-nvim/rest.nvim",

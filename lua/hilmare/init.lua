@@ -162,12 +162,12 @@ function Compose2()
 
     for _, capture, _ in query:iter_captures(tree:root(), 0) do
         local text = GetTextFromNode(capture, 0)
-        if text[1] == "CreateDocumentStore" or CreateTestData or WaitForIndexing or then
-            local function thing(_)
-                return { "_ravenTestClass." .. text[1] }
-            end
-            ReplaceTextInNode(capture, thing, 0)
-        end
+        -- if text[1] == "CreateDocumentStore" or CreateTestData or WaitForIndexing or then
+        --     local function thing(_)
+        --         return { "_ravenTestClass." .. text[1] }
+        --     end
+        --     ReplaceTextInNode(capture, thing, 0)
+        -- end
     end
 end
 function ComposeRavenTestClass()

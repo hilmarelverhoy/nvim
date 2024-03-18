@@ -22,6 +22,8 @@ vim.keymap.set('n', '<leader>gf', builtin.git_files, {})
 vim.keymap.set('n', '<leader>gs', builtin.git_status, {})
 vim.keymap.set('n', '<leader>gc', builtin.git_commits, {})
 vim.keymap.set('n', '<leader>gb', builtin.git_branches, {})
+vim.keymap.set('n', '<leader>gh', ":Telescope git_file_history<CR>", {})
+
 vim.keymap.set('n', '<leader>ws', builtin.lsp_workspace_symbols, {})
 vim.keymap.set('n', '<leader>wds', builtin.lsp_dynamic_workspace_symbols, {})
 vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, {})
@@ -64,3 +66,4 @@ require("telescope").setup {
 -- To get telescope-file-browser loaded and working with telescope,
 -- you need to call load_extension, somewhere after setup function:
 require("telescope").load_extension "file_browser"
+require("telescope").load_extension("git_file_history")
