@@ -162,7 +162,8 @@ function Compose2()
 
     for _, capture, _ in query:iter_captures(tree:root(), 0) do
         local text = GetTextFromNode(capture, 0)
-        if text[1] == "CreateDocumentStore" or CreateTestData or WaitForIndexing or then
+        print(text[1])
+        if text[1] == "CreateDocumentStore" or text[1] =="CreateTestData" or text[1] == "WaitForIndexing1" or text[1] == "WaitForUserToContiueTest" then
             local function thing(_)
                 return { "_ravenTestClass." .. text[1] }
             end
@@ -181,7 +182,6 @@ function ComposeRavenTestClass()
     ]])
     for _, matches, _ in query:iter_matches(tree:root(),0) do
         local t = GetTextFromNode(matches[1],0)
-        print(vim.inspect(t))
         if t[1] == "RavenTestClassBase" then
             local function remove(_)
                 return {}
@@ -191,7 +191,6 @@ function ComposeRavenTestClass()
             local text=GetTextFromNode(matches[3], 0)
             local function insert_testclass(_)
                  table.insert(text,2, "private static readonly RavenTestClassBase _ravenTestClass = new RavenTestClassBase();")
-                 print(text)
                  return text
 
             end
