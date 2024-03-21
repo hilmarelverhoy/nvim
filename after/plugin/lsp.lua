@@ -24,9 +24,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 })
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- print(vim.inspect(lsp_capabilities))
+-- print(vim.inspect(capabilities))
 local default_setup = function(server)
     require('lspconfig')[server].setup({
         capabilities = lsp_capabilities,
+        on_attach = function (client, bufnr)
+            print(vim.inspect(client.server_capabilities))
+        end
     })
 end
 require('mason').setup({})
@@ -37,6 +43,9 @@ require('mason-lspconfig').setup({
         lua_ls = function()
             require('lspconfig').lua_ls.setup({
                 capabilities = lsp_capabilities,
+        on_attach = function (client, bufnr)
+            -- print(vim.inspect(client.server_capabilities))
+        end,
                 settings = {
                     Lua = {
                         runtime = { version = 'LuaJIT' },
@@ -46,6 +55,7 @@ require('mason-lspconfig').setup({
                                 'require'
                             },
                         },
+                        signature_help = true,
                         workspace = {
                             -- Make the server aware of Neovim runtime files
                             library = vim.api.nvim_get_runtime_file("", true),

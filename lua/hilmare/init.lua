@@ -315,3 +315,21 @@ function GetTestMethods()
         end
     end
 
+    function Base64encodeSelection()
+
+        local vstart = vim.fn.getpos("'<")
+
+        local vend = vim.fn.getpos("'>")
+        if not vstart or not vend then
+            return
+        end
+        -- or use api.nvim_buf_get_lines
+        local lines = vim.api.nvim_buf_get_text(0, vstart[1],vstart[2],vend[1],vend[2])
+        return lines
+    end
+    function get_visual()
+        local _, ls, cs = unpack(vim.fn.getpos('v'))
+        local _, le, ce = unpack(vim.fn.getpos('.'))
+        vim.api.nvim_buf_get_text(0, ls-1, cs-1, le-1, ce, {})
+    end
+    vim.keymap.set("v", "øl", get_visual, {})
