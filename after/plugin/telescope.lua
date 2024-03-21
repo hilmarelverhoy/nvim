@@ -11,7 +11,7 @@ vim.keymap.set('n', '<leader>b', builtin.buffers, {})
 vim.keymap.set('n', '<leader>f', builtin.find_files, {})
 vim.keymap.set('n', '<leader>c', function ()
     local config = {
-        hidden = true,
+        -- hidden = true,
         cwd = path
     }
     builtin.find_files(config)
