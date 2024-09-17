@@ -26,3 +26,8 @@ autocmd("BufWinEnter", {
         vim.keymap.set("n", "<leader>t", ":Git push -u origin ", opts);
     end,
 })
+
+vim.keymap.set("n", "ømr",":diffget *REMOTE*<CR>",{})
+vim.keymap.set("n", "ømb",":diffget *BASE*<CR>",{})
+vim.keymap.set("n", "øml",":diffget *LOCAL*<CR>",{})
+vim.keymap.set("n", "ømn","/<<<<<<CR>zt",{})

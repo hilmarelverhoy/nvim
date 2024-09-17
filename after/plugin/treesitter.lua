@@ -4,9 +4,9 @@ else
 end 
 local ensure
 if vim.loop.os_uname().sysname == "Darwin" then
-    ensure = { "c", "lua", "vim", "c_sharp", "query", "http", "json" }
+    ensure = { "c", "lua", "vim", "c_sharp", "query", "http", "json", "js" }
 else
-    ensure = { "c", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml" }
+    ensure = { "c", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml", "javascript" }
 end 
 -- local path = [[C:\Users\Elvhil\Maskinoppsett\]]
 -- vim.opt.runtimepath:append(path)
@@ -18,6 +18,9 @@ require 'nvim-treesitter.configs'.setup {
     sync_install = false,
     auto_install = false,
     ignore_install = {},
+    indent = {
+        enable = true,
+    },
 
     highlight = {
         enable = true,

@@ -14,25 +14,25 @@ require'nvim-treesitter.configs'.setup {
             enable = true,
             set_jumps = true, -- whether to set jumps in the jumplist
             goto_next_start = {
-                ["<m"] = "@function.outer",
-                ["<<"] = { query = "@class.outer", desc = "Next class start" },
-                ["<o"] = { query = { "@loop.inner", "@loop.outer" } },
-                ["<s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
-                ["<z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                ["[m"] = "@function.outer",
+                ["[["] = { query = "@class.outer", desc = "Next class start" },
+                ["[o"] = { query = { "@loop.inner", "@loop.outer" } },
+                ["[s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
+                ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             goto_next_end = {
-                ["<M"] = "@function.outer",
-                ["<>"] = "@class.outer",
+                ["[M"] = "@function.outer",
+                ["[]"] = "@class.outer",
             },
             goto_previous_start = {
-                [">n"] = "@name",
-                [">m"] = "@function.outer",
-                [">>"] = "@class.outer",
-                [">s"] = { query = "@scope", query_group = "locals", desc = "Prev scope" },
+                ["]n"] = "@name",
+                ["]m"] = "@function.outer",
+                ["]["] = "@class.outer",
+                ["]s"] = { query = "@scope", query_group = "locals", desc = "Prev scope" },
             },
             goto_previous_end = {
-                [">M"] = "@function.outer",
-                [">]"] = "@class.outer",
+                ["]M"] = "@function.outer",
+                ["]]"] = "@class.outer",
             },
             -- Below will go to either the start or the end, whichever is closer.
             -- Use if you want more granular movements

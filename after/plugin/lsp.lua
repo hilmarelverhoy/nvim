@@ -13,25 +13,24 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set("n", "gr", vim.lsp.buf.references, options)
         vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, options)
         vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, options)
-        vim.keymap.set("n", "<d", vim.diagnostic.goto_next, options)
-        vim.keymap.set("n", ">d", vim.diagnostic.goto_prev, options)
+        vim.keymap.set("n", "[d", vim.diagnostic.goto_next, options)
+        vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, options)
         vim.keymap.set("n", "<leader>li", vim.lsp.buf.incoming_calls, options)
         vim.keymap.set("n", "<leader>lo", vim.lsp.buf.outgoing_calls, options)
         vim.keymap.set({ 'n', 'v' }, '<leader>a', vim.lsp.buf.code_action, options)
         vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, options)
         vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, options)
         vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, options)
+        -- vim.keymap.set("n", "go", vim.lsp., options)
     end
 })
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-local capabilities = vim.lsp.protocol.make_client_capabilities()
--- print(vim.inspect(lsp_capabilities))
--- print(vim.inspect(capabilities))
+
 local default_setup = function(server)
     require('lspconfig')[server].setup({
         capabilities = lsp_capabilities,
         on_attach = function (client, bufnr)
-            print(vim.inspect(client.server_capabilities))
+            -- print(vim.inspect(client.server_capabilities))
         end
     })
 end
@@ -43,9 +42,9 @@ require('mason-lspconfig').setup({
         lua_ls = function()
             require('lspconfig').lua_ls.setup({
                 capabilities = lsp_capabilities,
-        on_attach = function (client, bufnr)
-            -- print(vim.inspect(client.server_capabilities))
-        end,
+                on_attach = function (client, bufnr)
+                    -- print(vim.inspect(client.server_capabilities))
+                end,
                 settings = {
                     Lua = {
                         runtime = { version = 'LuaJIT' },
@@ -66,20 +65,85 @@ require('mason-lspconfig').setup({
                     },
                 },
             })
+        end,
+        csharp_ls = function ()
+            require'lspconfig'.csharp_ls.setup({
+                capabilities = vim.tbl_deep_extend("force", lsp_capabilities, {semanticTokensProvider = {full=true}}),
+                on_attach = function (client, bufnr)
+                    -- print(vim.inspect(client.server_capabilities))
+                end,
+                settings = {
+
+                }
+
+            })
         end
     }
 
 })
 require("mason-nvim-dap").setup()
-require("roslyn").setup({
-    dotnet_cmd = "dotnet", -- this is the default
-    -- roslyn_version = "4.8.0-3.23475.7", -- this is the default
-    roslyn_version = "4.9.0-3.23604.10",
-    capabilities = lsp_capabilities, -- required
-    on_attach = function()
-        print("hei")
-    end,
-})
+
+-- require("roslyn").setup({
+--     dotnet_cmd = "dotnet", -- this is the default
+--     -- roslyn_version = "4.8.0-3.23475.7", -- this is the default
+--     roslyn_version = "4.9.0-3.23604.10",
+--     capabilities = lsp_capabilities, -- required
+--     on_attach = function(client)
+--         -- make sure this happens once per client, not per buffer
+--         if not client.is_hacked then
+--             client.is_hacked = true
+
+--             -- let the runtime know the server can do semanticTokens/full now
+            -- client.server_capabilities = vim.tbl_deep_extend("force", client.server_capabilities, {
+--                 semanticTokensProvider = {
+--                     full = true,
+--                 },
+--             })
+
+--             -- monkey patch the request proxy
+--             local request_inner = client.request
+--             client.request = function(method, params, handler)
+--                 if method ~= vim.lsp.protocol.Methods.textDocument_semanticTokens_full then
+--                     return request_inner(method, params, handler)
+--                 end
+
+--                 local function find_buf_by_uri(search_uri)
+--                     local bufs = vim.api.nvim_list_bufs()
+--                     for _, buf in ipairs(bufs) do
+--                         local name = vim.api.nvim_buf_get_name(buf)
+--                         local uri = "file://" .. name
+--                         if uri == search_uri then
+--                             return buf
+--                         end
+--                     end
+--                 end
+
+--                 local doc_uri = params.textDocument.uri
+
+--                 local target_bufnr = find_buf_by_uri(doc_uri)
+--                 local line_count = vim.api.nvim_buf_line_count(target_bufnr)
+--                 local last_line = vim.api.nvim_buf_get_lines(target_bufnr, line_count - 1, line_count, true)[1]
+
+--                 return request_inner("textDocument/semanticTokens/range", {
+--                     textDocument = params.textDocument,
+--                     range = {
+--                         ["start"] = {
+--                             line = 0,
+--                             character = 0,
+--                         },
+--                         ["end"] = {
+--                             line = line_count - 1,
+--                             character = string.len(last_line) - 1,
+--                         },
+--                     },
+--                 }, handler)
+--             end
+--         end 
+--     end,
+--     settings = {
+
+--     }
+-- })
 local cmp = require('cmp')
 
 cmp.setup({
@@ -141,6 +205,18 @@ cmp.setup({
 
 
 
+vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
+    pattern = {"*.test"},
+    callback = function ()
+        print("vføløjlfdsjgfdøklafjkldø")
+        vim.lsp.start({
+            name = 'hilmar_ls',
+            cmd = {[[C:\Users\ELVHIL\hilmar_ls\bin\Release\net8.0\publish\hilmar_ls.exe]]},
+            filetypes = { 'cs' },
+            root_dir = vim.fs.dirname(vim.fs.find({"*.sln"}, {upward = true})[1]),
+        })
+    end
+})
 
 
 

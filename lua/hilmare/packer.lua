@@ -7,14 +7,16 @@ vim.cmd('packadd cfilter')
 return require('packer').startup(function(use)
     -- Packer can manage itself
     use 'wbthomason/packer.nvim'
-    use 'jmederosalvarado/roslyn.nvim'
+    use 'seblj/roslyn.nvim'
     use {
         'nvim-telescope/telescope.nvim', tag = '0.1.4',
         -- or                            , branch = '0.1.x',
         requires = { {'nvim-lua/plenary.nvim'} }
     }
     use {'nvim-telescope/telescope-project.nvim'}
-    use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
+    -- use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
+    use "~\\telescope-git-file-history.nvim"
+    use "sindrets/diffview.nvim"
     use{"keyvchan/telescope-running-commands.nvim"}
     use {
         "nvim-telescope/telescope-file-browser.nvim",
@@ -62,8 +64,6 @@ return require('packer').startup(function(use)
             "antoinemadec/FixCursorHold.nvim"
         }
     }
-
-    use('mbbill/undotree')
     use('tpope/vim-dispatch')
     use('tpope/vim-fugitive')
     use('tpope/vim-commentary')

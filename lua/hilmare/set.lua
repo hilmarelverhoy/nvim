@@ -8,7 +8,7 @@ vim.opt.hidden=true
 vim.opt.magic=true
 vim.opt.ignorecase=true
 vim.opt.smartcase=true
-vim.opt.smartindent=true
+-- vim.opt.smartindent=true
 vim.opt.list=true
 vim.opt.listchars="tab:>-,trail:·"
 
@@ -25,7 +25,7 @@ vim.opt.wildignore:append(
     ]])
 vim.opt.incsearch = true
 --set background=dark
-vim.opt.fileformats="unix,dos"
+vim.opt.fileformats="dos,unix"
 
 --let g:spellfile_URL = 'http://ftp.vim.org/vim/runtime/spell'
 --set spelllang=en,nb
@@ -43,3 +43,4 @@ vim.opt.textwidth=88
 vim.opt.number = true
 vim.opt.rnu = true
 
+vim.opt.fixeol = false

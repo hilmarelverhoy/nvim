@@ -11,6 +11,8 @@
 local function copy(args)
 	return args[1]
 end
+local ts_utils = require("nvim-treesitter.ts_utils")
+
 local function makename(args)
      local a = args[1][1]:sub(1,2)
      local b = args[1][1]:sub(3)
@@ -26,174 +28,247 @@ local function makename(args)
  local function get_filename()
      return vim.fn.expand("%:t:r")
  end
+local function goto_name_identifier()
+    local ts_opts = {}
+    ts_opts["bufnr"] = 0
+    ts_opts["pos"] = nil
+    local node = vim.treesitter.get_node(ts_opts)
+    if not node then
+        return nil
+    end
+    local next = node:parent()
+    while next do
+        if next:type() == "class_declaration" or next:type() == "variable_declarator" or next:type() == "method_declaration" then
+            print(node:parent():type())
+            print(next:type())
+            local t = next:iter_children()
+            for index, string in t do
+                if index ~= node and index:type() == "identifier" and string == "name" then
+                    local x,y,z,w = index:range()
+                    vim.api.nvim_feedkeys("m'","n",false)
+                    vim.api.nvim_win_set_cursor(0, {x+1,y});
+                    return
+                end
+            end
+        end
+        if next:type() == "variable_declaration" then
+            print("hei")
+            print(next)
+            local t = next:child(1):iter_children()
+            for index, string in t do
+                if index ~= node and index:type() == "identifier" and string == "name" then
+                    local x,y,z,w = index:range()
 
- local function get_class_name()
-     local opts = {}
-     opts["bufnr"] = 0
-     opts["pos"] = nil
-     local node = vim.treesitter.get_node(opts)
-     if not node then
-         return nil
-     end
-     local next = node:parent()
-     while next do
-         if next:type() == "class_declaration" then
-             local t = next:iter_children()
-             for index, _ in t do
-                 if index:type() == "identifier" then
-                     local start_col, start_row, end_col, end_row = index:range()
-                     local text = vim.api.nvim_buf_get_text(0, start_col,start_row,end_col, end_row, {});
-                     return text[1]
-                 end
-             end
-         end
-         next = next:parent()
-     end
+                    vim.api.nvim_feedkeys("m'","n",false)
+                    vim.api.nvim_win_set_cursor(0, {x+1,y});
+                    return
+                end
+            end
+            
+        end
+        next = next:parent()
+    end
+end
+local function goto_parent_node()
+    local ts_opts = {}
+    ts_opts["bufnr"] = 0
+    ts_opts["pos"] = nil
+    local node = vim.treesitter.get_node(ts_opts)
+    if not node then
+        return nil
+    end
+    local next = node
+    while next do
+        if next:type() == "class_declaration" or  next:type() == "method_declaration" then
+            local t = next:iter_children()
+            for index, string in t do
+                if index ~= node and index:type() == "identifier" and string == "type" then
+                    local x,y,_,_ = index:range()
+                    vim.api.nvim_feedkeys("m'","n",false)
 
-     return vim.fn.expand("%:t:r")
- end
+                    vim.api.nvim_win_set_cursor(0, {x+1,y});
+                    return
+                end
+            end
+        end
+        if next:type() == "variable_declarator" then
+            local t = next:parent():iter_children()
+            for index, string in t do
+                if index ~= node and string == "type"  then
+                    local x,y,_,_ = index:range()
+                    vim.api.nvim_feedkeys("m'","n",false)
+                    vim.api.nvim_win_set_cursor(0, {x+1,y});
+                    return
+                end
+            end
+        end
+        next = next:parent()
+    end
+end
+vim.keymap.set("n","øcn",function ()
+    goto_name_identifier()
+end,{})
+vim.keymap.set("n","øct",function ()
+    goto_parent_node()
+end,{})
+local function get_class_name()
+    local opts = {}
+    opts["bufnr"] = 0
+    opts["pos"] = nil
+    local node = vim.treesitter.get_node(opts)
+    if not node then
+        return nil
+    end
+    local next = node:parent()
+    while next do
+        if next:type() == "class_declaration" then
+            local t = next:iter_children()
+            for index, _ in t do
+                if index:type() == "identifier" then
+                    local start_col, start_row, end_col, end_row = index:range()
+                    local text = vim.api.nvim_buf_get_text(0, start_col,start_row,end_col, end_row, {});
+                    return text[1]
+                end
+            end
+        end
+        next = next:parent()
+    end
 
- local ls = require("luasnip")
- local text = ls.text_node
- local insert = ls.insert_node
- local f = ls.function_node
- ls.add_snippets("cs",{
-     ls.snippet("fn", {
-         -- Simple static text.
-         -- function, first parameter is the function, second the Placeholders
-         -- whose text it gets as input.
-         ls.choice_node(4,{text("public"), text("private")}),
-         text(" "),
-         -- Placeholder/Insert.
-         insert(3, "Type"),
-         text(" "),
-         insert(1),
-         text("("),
-         -- Placeholder with initial text.
-         insert(2, "int foo"),
-         text({ ")",""}),
-         text({ "{"  ,"\t"}),
-         -- Last Placeholder, exit Point of the snippet.
-         insert(0),
-         text({ "", "}" }),
-     }),
-     ls.snippet("afn", {
-         -- Simple static text.
-         -- function, first parameter is the function, second the Placeholders
-         -- whose text it gets as input.
-         ls.choice_node(4,{text("public"), text("private")}),
-         text(" async "),
-         -- Placeholder/Insert.
-         ls.choice_node(3, {
-             ls.snippet_node(nil,{
-                 text("Task<"),
-                 insert(1, "Type"),
-                 text(">")
-             }),
-             text("Task"),
-             text("void")
-         }),
-         text(" "),
-         insert(1),
-         text("("),
-         -- Placeholder with initial text.
-         insert(2, "int foo"),
-         text({ ")",""}),
-         text({ "{"  ,"\t"}),
-         -- Last Placeholder, exit Point of the snippet.
-         insert(0),
-         text({ "", "}" }),
-     }),
-     ls.snippet("cls", {
-         ls.choice_node(2,{text("public"),text("protected"), text("private"), text("internal")}), text(" class "), f(get_filename),
-         text({ "" ,""}),
-         -- todo: inheritance
-         text({ "{" ,"\t" }),
-         insert(3, {"Type variable", ""}),
-         text({ ""  ,"\t"}),
-         ls.choice_node(1,{text("public"),text("protected"), text("private"), text("internal")}), text({" ",}), f(get_filename), text({ "()", "\t"}),
-         text({ "{"  ,"\t\t"}),
-         insert(0),
-         text({ "", "\t}" }),
-         text({ "", "}" }),
-     }),
-     ls.snippet("ctor",{
-         text("public "),
-         f(get_class_name),
-         text("()", ""),
-         text({ "{"  ,"\t"}),
-         insert(0),
-         text({ ""  ,"}"}),
-     }),
-     ls.snippet("inst", {
-         text("private readonly "),
-         insert(1, "Type"),
-         text(" _"),
-         f(makename,1),
-         insert(2),
-         text({";", ""}),
-     })
+    return vim.fn.expand("%:t:r")
+end
 
- },{key = "csharp"})
+local ls = require("luasnip")
+local text = ls.text_node
+local insert = ls.insert_node
+local f = ls.function_node
+ls.add_snippets("cs",{
+    ls.snippet("fn", {
+        -- Simple static text.
+        -- function, first parameter is the function, second the Placeholders
+        -- whose text it gets as input.
+        ls.choice_node(4,{text("public"), text("private")}),
+        text(" "),
+        -- Placeholder/Insert.
+        insert(3, "Type"),
+        text(" "),
+        insert(1),
+        text("("),
+        -- Placeholder with initial text.
+        insert(2, "int foo"),
+        text({ ")",""}),
+        text({ "{"  ,"\t"}),
+        -- Last Placeholder, exit Point of the snippet.
+        insert(0),
+        text({ "", "}" }),
+    }),
+    ls.snippet("afn", {
+        -- Simple static text.
+        -- function, first parameter is the function, second the Placeholders
+        -- whose text it gets as input.
+        ls.choice_node(4,{text("public"), text("private")}),
+        text(" async "),
+        -- Placeholder/Insert.
+        ls.choice_node(3, {
+            ls.snippet_node(nil,{
+                text("Task<"),
+                insert(1, "Type"),
+                text(">")
+            }),
+            text("Task"),
+            text("void")
+        }),
+        text(" "),
+        insert(1),
+        text("("),
+        -- Placeholder with initial text.
+        insert(2, "int foo"),
+        text({ ")",""}),
+        text({ "{"  ,"\t"}),
+        -- Last Placeholder, exit Point of the snippet.
+        insert(0),
+        text({ "", "}" }),
+    }),
+    ls.snippet("cls", {
+        ls.choice_node(2,{text("public"),text("protected"), text("private"), text("internal")}), text(" class "), f(get_filename),
+        text({ "" ,""}),
+        -- todo: inheritance
+        text({ "{" ,"\t" }),
+        insert(3, {"Type variable", ""}),
+        text({ ""  ,"\t"}),
+        ls.choice_node(1,{text("public"),text("protected"), text("private"), text("internal")}), text({" ",}), f(get_filename), text({ "()", "\t"}),
+        text({ "{"  ,"\t\t"}),
+        insert(0),
+        text({ "", "\t}" }),
+        text({ "", "}" }),
+    }),
+    ls.snippet("ctor",{
+        text("public "),
+        f(get_class_name),
+        text("()", ""),
+        text({ "{","\t"}),
+        insert(0),
+        text({ "","}"}),
+    }),
+    ls.snippet("inst", {
+        text("private readonly "),
+        insert(1, "Type"),
+        text(" _"),
+        f(makename,1),
+        insert(2),
+        text({";", ""}),
+    })
 
- vim.diagnostic.config({
-     virtual_text = true,
- })
- vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
-     pattern = {"*.cs","*.csproj", "*.targets"},
-     command = "compiler dotnet",
- })
- vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
-     pattern = {"*.cs","*.csproj", "*.targets"},
-     callback = function ()
-         vim.keymap.set("n", "<localleader>r", function ()
-             require("neotest").run.run()
-         end , {})
-         vim.keymap.set("n", "<localleader>r", function ()
-             require("neotest").run.run()
-         end , {})
-         vim.keymap.set("n", "<localleader>R", function ()
-             require("neotest").run.run(vim.fn.expand("%"))
-         end, {})
-         vim.keymap.set("n",  "<localleader>m", ":wa<Enter>:Make<Enter>")
-         vim.keymap.set("n",  "<localleader>m", ":wa<Enter>:Make<Enter>")
-         vim.keymap.set("n", "<localleader>w", [[:Start! iisexpress.exe /config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config /siteid:2<CR>]])
+},{key = "csharp"})
 
+vim.diagnostic.config({
+    virtual_text = true,
+})
+-- vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
+    --     pattern = {"COMMIT_EDITMSG"},
+    --     command = ":1norm! A",
+    -- })
+    vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
+        pattern = {"*.cs","*.csproj", "*.targets"},
+        command = "compiler dotnet",
+    })
+    vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
+        pattern = {"*.cs","*.csproj","*.cshtml", "*.targets"},
+        callback = function ()
+            vim.keymap.set("n", "<localleader>r", function ()
+                require("neotest").run.run()
+            end , {})
+            vim.keymap.set("n", "<localleader>R", function ()
+                require("neotest").run.run(vim.fn.expand("%"))
+            end, {})
+            vim.keymap.set("n",  "<localleader>m", ":wa<Enter>:Make<Enter>")
+            vim.keymap.set("n",  "<localleader>m", ":wa<Enter>:Make<Enter>")
+            vim.keymap.set("n", "<localleader>w", [[:Start! iisexpress.exe /config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config /siteid:2<CR>]])
+            vim.keymap.set("n", "<localleader>w", [[:Start! iisexpress.exe /config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config /siteid:2<CR>]])
+            vim.keymap.set("n", "<localleader>e", [[:Start! iisexpress.exe /config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config /siteid:4<CR>]])
+            -- vim.keymap.set("n", "<localleader>c", function()
+            --     vim.cmd([[Start! jb.exe cleanupcode --settings="C:\Users\ELVHIL\fido\Sti.sln.DotSettings"]] .. vim.fn.expand("%"))
+            -- end,{})
+            vim.keymap.set("n", "<localleader>d", [[:Start! C:\Users\ELVHIL\fido\Fido.Import.DistribuerTilRaven\bin\Fido.Import.DistribuerTilRaven.exe]])
+        end
+    })
 
+    vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
+        pattern = {"http"},
+        callback = function ()
+            vim.keymap.set("n",  "<localleader>r", "<Plug>RestNvim")
+            vim.keymap.set("n",  "<localleader>p",  "<Plug>RestNvimPreview")
+            vim.keymap.set("n", "<localleader>w", [[:Start! iisexpress.exe /config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config /siteid:2<CR>]])
+            vim.keymap.set("n", "<localleader>f", [[:Start! iisexpress.exe /config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config /siteid:4<CR>]])
 
-     end
- })
-
- vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
-     pattern = {"http"},
-     callback = function ()
-         vim.keymap.set("n",  "<localleader>r", "<Plug>RestNvim")
-         vim.keymap.set("n",  "<localleader>p",  "<Plug>RestNvimPreview")
-         vim.keymap.set("n", "<localleader>w", [[:Start! iisexpress.exe /config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config /siteid:2<CR>]])
-
-
-
-     end
- })
- local Job = require'plenary.job'
- local async = require'plenary.async'
- local job = async.void(
- function ()
-     local job = Job:new({
-         command = 'iisexpress.exe',
-         args = { [[/config:C:\Users\ELVHIL\Documents\IISExpress\config\applicationhost.config ]], [[/siteid:2]] },
-         -- cwd = [[C:\Users\ELVHIL\Documents\IISExpress\]],
-         env = { ['a'] = 'b' },
-         on_exit = function(j, return_val)
-             print(return_val)
-             print(vim.inspect(j:result()))
-         end,
-     })
-     job:start()
- end
- )
- vim.keymap.set("n", "<leader>w", function ()
-     job ""
- end, {})
-
-
+        end
+    })
+    require('neogen').setup {
+        enabled = true,
+        languages = {
+            cs = {
+                template = {
+                    annotation_convention = "xmldoc" -- for a full list of annotation_conventions, see supported-languages below,
+                }
+            },
+        }
+    }
