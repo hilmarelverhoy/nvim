@@ -181,6 +181,16 @@ cmp.setup({
         { name = 'buffer' },
     })
 })
+require"csharp".setup({
+    lsp = {
+        roslyn = {
+            enable = false,
+            cmd_path = [[C:\Users\ELVHIL\AppData\Local\nvim-data\mason\bin\csharp-ls.CMD]]
+        }
+
+    },
+    capabilities = lsp_capabilities,
+})
 -- vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
 --     pattern = {"*.cs"},
 --     callback = function ()

@@ -21,10 +21,10 @@ vim.keymap.set('n', '<leader>c', function ()
     builtin.find_files(config)
 end, {})
 
-vim.keymap.set('n','<leader>q',
+vim.keymap.set('n','æe',
     function ()
         local opts = {}
-        local find_command = { "rg","--files", "--color", "never", ".","*.exe"}
+        local find_command = { "rg","--files", "--color", "never", ".", "exe"}
         pickers
             .new(opts, {
                 prompt_title = "Find Files",
@@ -33,9 +33,9 @@ vim.keymap.set('n','<leader>q',
                 sorter = conf.file_sorter(opts),
             })
             :find()
-        print("hei")
     end
 ,{})
+
 vim.keymap.set('n', '<leader>/', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>gf', builtin.git_files, {})
 vim.keymap.set('n', '<leader>gs', builtin.git_status, {})
@@ -43,9 +43,9 @@ vim.keymap.set('n', '<leader>gc', builtin.git_commits, {})
 vim.keymap.set('n', '<leader>gb', builtin.git_branches, {})
 vim.keymap.set('n', '<leader>gh', require'telescope'.extensions.git_file_history.git_file_history, {})
 
-vim.keymap.set('n', '<leader>ws', builtin.lsp_workspace_symbols, {})
-vim.keymap.set('n', '<leader>wds', builtin.lsp_dynamic_workspace_symbols, {})
-vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, {})
+vim.keymap.set('n', '<leader>lw', builtin.lsp_workspace_symbols, {})
+vim.keymap.set('n', '<leader>ls', builtin.lsp_dynamic_workspace_symbols, {})
+vim.keymap.set('n', '<leader>ld', builtin.lsp_document_symbols, {})
 vim.keymap.set('n', '<leader>d', builtin.diagnostics, {})
 vim.keymap.set('n', '<leader>q', builtin.quickfix, {})
 vim.keymap.set('n', '<leader>tp', require 'telescope'.extensions.project.project, {})
@@ -84,7 +84,7 @@ require("telescope").setup {
             base_dirs = {
                 "C:\\Users\\ELVHIL\\AppData\\Local\\nvim",
                 "C:\\Users\\ELVHIL\\fido",
-                "C:\\Users\\ELVHIL\\fidov2",
+                "C:\\Users\\ELVHIL\\fido-v2",
             },
             hidden_files = true,
             theme = "dropdown",

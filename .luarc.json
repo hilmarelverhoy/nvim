@@ -1,0 +1,11 @@
+{
+    "diagnostics.disable": [
+        "unused-local",
+        "cast-local-type"
+    ],
+    "diagnostics.globals": [
+        "vim",
+        "require",
+        "cquery"
+    ]
+}
