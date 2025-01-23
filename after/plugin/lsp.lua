@@ -81,7 +81,6 @@ require('mason-lspconfig').setup({
     }
 
 })
-require("mason-nvim-dap").setup()
 
 -- require("roslyn").setup({
 --     dotnet_cmd = "dotnet", -- this is the default
