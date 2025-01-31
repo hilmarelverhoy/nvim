@@ -68,7 +68,7 @@ function Find()
         local row, col,_,_ = capture[1]:range()
         vim.api.nvim_win_set_cursor(0,{row+1,col})
 
-        print(vim.inspect(vim.lsp.semantic_tokens.get_at_pos()))
+        -- print(vim.inspect(vim.lsp.semantic_tokens.get_at_pos()))
     end
 end
 function ConfigureAwaitFalse()
@@ -76,14 +76,14 @@ function ConfigureAwaitFalse()
     local tree = parser:parse()[1]
     local query = vim.treesitter.query.parse("c_sharp", [[
     (await_expression
-    (invocation_expression
-    [(member_access_expression
-    (identifier)@identifier
-    )
-    (identifier)@identifier
-    ]
-    )
-    )@await]])
+        (invocation_expression
+            [(member_access_expression
+                (identifier)@identifier
+                )
+                (identifier)@identifier
+            ]
+            )
+        )@await]])
     -- local query = vim.treesitter.query.parse("c_sharp",[[
     -- (await_expression
     --     (invocation_expression
@@ -91,7 +91,7 @@ function ConfigureAwaitFalse()
     --         name: identifier @ function
     --         )@await)]])
     local iter = query:iter_matches(tree:root(),0)
-for id, capture, hei in iter do
+    for id, capture, hei in iter do
         if (capture[1] ~= "ConfigureAwait") then
             local _, _, row,col = capture[2]:range()
             vim.api.nvim_buf_set_text(0,row,col,row,col,{".ConfigureAwait(false)"})
@@ -126,23 +126,23 @@ function B()
     local tree = parser:parse()[1]
     local query = vim.treesitter.query.parse("c_sharp",[[
 (using_statement
-  (variable_declaration
-    (variable_declarator
-      (equals_value_clause 
-        (invocation_expression
-          (member_access_expression 
-            name:(identifier)@metode(#eq? @metode "OpenAsyncSession")
-            )))))
-  body: (block 
-          (expression_statement 
+    (variable_declaration
+        (variable_declarator
+            (equals_value_clause 
+                (invocation_expression
+                    (member_access_expression 
+                        name:(identifier)@metode(#eq? @metode "OpenAsyncSession")
+                        )))))
+    body: (block 
+        (expression_statement 
             (await_expression 
-              (invocation_expression 
-                function: (member_access_expression 
-                            expression: (identifier)
-                            name: (identifier) @a(#eq? @a "StoreAsync")
-                            ))))@expr)
-  )@u
-    ]])
+                (invocation_expression 
+                    function: (member_access_expression 
+                        expression: (identifier)
+                        name: (identifier) @a(#eq? @a "StoreAsync")
+                        ))))@expr)
+    )@u
+]])
     local set = {};
     for pattern, match, metadata in query:iter_matches(tree:root(),0) do
         local startLine,_,_,_ = match[4]:range()
@@ -150,7 +150,7 @@ function B()
     end
     for key, value in pairs(set) do
         local linja = GetTextFromNode(value)[1];
-        print(linja)
+        -- print(linja)
         local function change()
             return {linja .. "await session.SaveChangesAsync();"}
         end
@@ -164,8 +164,8 @@ function UsingDocumentStore()
     local tree = parser:parse()[1]
     local query = vim.treesitter.query.parse("c_sharp",[[
     (block
-    (local_declaration_statement(variable_declaration(variable_declarator(equals_value_clause(invocation_expression(identifier)@identifier))))@declaration)@to_replace
-    )@block
+        (local_declaration_statement(variable_declaration(variable_declarator(equals_value_clause(invocation_expression(identifier)@identifier))))@declaration)@to_replace
+        )@block
     ]])
     for pattern, match, metadata in query:iter_matches(tree:root(),0) do
         local declaration = match[2]
@@ -206,13 +206,13 @@ function AddNullCheck()
     local query = vim.treesitter.query.parse("c_sharp",
         [[
 (binary_expression 
-left: (member_access_expression
-expression:
-(identifier)@i 
-name: (identifier)@a(#eq? @a "GyldigTil")
-)
-right: (identifier)
-)@res
+    left: (member_access_expression
+        expression:
+        (identifier)@i 
+        name: (identifier)@a(#eq? @a "GyldigTil")
+        )
+    right: (identifier)
+    )@res
 ]])
     for _, matches, _ in query:iter_matches(tree:root(), 0) do
         local variable = matches[1]
@@ -301,14 +301,14 @@ function CreateMarkdownTable()
     local query = vim.treesitter.query.parse("c_sharp",
         [[
     body: (declaration_list 
-      (record_declaration 
-        (modifier) 
-        name: (identifier) 
-        body: (declaration_list 
-          (comment) @a(#eq? @a "/// <summary>")
-          (comment)* @comments
-          (comment) @b(#eq? @b "/// </summary>")
-          [
+        (record_declaration 
+            (modifier) 
+            name: (identifier) 
+            body: (declaration_list 
+                (comment) @a(#eq? @a "/// <summary>")
+                (comment)* @comments
+                (comment) @b(#eq? @b "/// </summary>")
+                [
                     (property_declaration 
                         (modifier)@single
                         type: (_) @type
@@ -334,7 +334,7 @@ function CreateMarkdownTable()
 
         local isPublic = false
         local name = query.captures[t];
-        print(t)
+        -- print(t)
         -- print(name .. GetTextFromNode(node, 0)[1])
         if name =="comments" then
             vim.print(GetTextFromNode(capture)[1])
@@ -344,10 +344,10 @@ function CreateMarkdownTable()
         elseif name == "property" then
             table.insert(names,1, capture)
         else
-            print(name)
+            -- print(name)
         end
     end
-    vim.print(comments)
+    -- vim.print(comments)
 
     -- for t, match, metadata in query:iter_matches(tree:root(), 0) do
     --     local isPublic = false
@@ -457,7 +457,7 @@ function ContainsToIn()
         local _,_,end_col, end_row = argumentsNode:range()
         local newCode = "ContainsAny(" .. GetTextFromNode(targetNode, 0)[1] ..")"
         vim.api.nvim_buf_set_text(0, start_col, start_row, end_col, end_row, {newCode})
-        print(newCode)
+        -- print(newCode)
     end
 
 end
@@ -684,24 +684,31 @@ function remove_async()
             -- kanskje slette range
             local tree = parser:parse()[1]
             local query = vim.treesitter.query.parse("c_sharp", [[
-                (method_declaration 
-                    (modifier)?@mod(#eq? @mod "async")
-                    returns:[(identifier)@task
-                        (generic_name
-                            (identifier)
-                            (type_argument_list((_)@generic)))@generic_task]
+        (method_declaration 
+            (modifier)?@mod(#eq? @mod "async")
+            returns:[(identifier)@task
+                (generic_name
+                    (identifier)
+                    (type_argument_list((_)@generic)))@generic_task]
 
-                    name: (_)@name)
-                ]])
+            name: (_)@name)
+        ]])
             for i, match, metadata in query:iter_matches(next,0) do
                 local async = match[1]
                 local task = match[2]
                 local generic = match[3]
                 local generic_task = match[4]
                 local name = match[5]
-                --Vi gidder ikke å endre navn, men kunng gjort det ehr
-                print(task)
-                print(generic)
+
+                ReplaceTextInNode(name, function (text)
+                    local subbedText = text[1]:sub(-5,-1)
+                    -- print(subbedText)
+                    if (subbedText == "Async") then
+                        return { text[1]:sub(1, -6)}
+                    else
+                        return { text[1] }
+                    end
+                end, 0)
                 if task ~= nil then
                     local function void()
                         return {"void"}
@@ -818,7 +825,7 @@ function remove_async_from_methodname()
             end
         end
 
-        vim.print(GetTextFromNode(the_node))
+        -- vim.print(GetTextFromNode(the_node))
         ReplaceTextInNode(the_node, function (text)
             return { text[1]:sub(1, -6)}
         end,0)
@@ -829,13 +836,13 @@ function remove_async_from_methodname_definition()
     -- kanskje slette range
     local tree = parser:parse()[1]
     local query = vim.treesitter.query.parse("c_sharp", [[
-        (method_declaration
-            returns: [(predefined_type)@predefined
-                (identifier)@identifier
-                (generic_name)@generic_name
-            ]
-            name: (identifier)@name(#match? @name ".*Async$"))
-        ]])
+    (method_declaration
+        returns: [(predefined_type)@predefined
+            (identifier)@identifier
+            (generic_name)@generic_name
+        ]
+        name: (identifier)@name(#match? @name ".*Async$"))
+    ]])
     for i, match, metadata in query:iter_matches(tree:root(),0) do
         local predefined = match[1]
         local identifier = match[2]
@@ -873,17 +880,30 @@ function add_async()
             -- kanskje slette range
             local tree = parser:parse()[1]
             local query = vim.treesitter.query.parse("c_sharp", [[
-          (method_declaration 
-              returns: [(predefined_type)@void
-                  (identifier)@identifier
-                  (generic_name)@generic
-              ]
-              name: (identifier))
-          ]])
+      (method_declaration 
+          returns: [(predefined_type)@void
+              (identifier)@identifier
+              (generic_name)@generic
+              (nullable_type)@nullable
+          ]
+          name: (identifier)@name)
+      ]])
             for i, match, metadata in query:iter_matches(next,0) do
                 local predefined = match[1]
                 local identifier = match[2]
                 local generic = match[3]
+                local nullable = match[4]
+                local name = match[5]
+                ReplaceTextInNode(name, function (text)
+                    local subbedText = text[1]:sub(-5,-1)
+                    -- print(subbedText)
+                    if (subbedText == "Async") then
+                        return { text[1]}
+                    else
+                        return { text[1] .. "Async" }
+                    end
+                end, 0)
+
                 if predefined ~= nil then
                     local text = GetTextFromNode(predefined)[1]
                     if text == "void" then
@@ -904,16 +924,30 @@ function add_async()
                     end
                     ReplaceTextInNode(identifier, task)
                 elseif generic ~= nil then
+                    local text = GetTextFromNode(generic)[1]
+                    local subbedText = text:sub(1,4)
+                    if (subbedText ~= "Task") then
+                        local function task(t)
+                            return { "async Task<" .. t[1] ..">" }
+                        end
+                        ReplaceTextInNode(generic, task)
+                    else
+                        local function task(t)
+                            return { "async ".. t[1]}
+                        end
+                        ReplaceTextInNode(generic, task)
+                    end
+                elseif nullable ~= nil then
                     local function task(t)
                         return { "async Task<" .. t[1] ..">" }
                     end
-                    ReplaceTextInNode(generic, task)
+                    ReplaceTextInNode(nullable, task)
                 end
             end
             return
         else
             local tmp = next:parent()
-            if next ~= nil then 
+            if next ~= nil then
                 next = tmp
             else
                 return

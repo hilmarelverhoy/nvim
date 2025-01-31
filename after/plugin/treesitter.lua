@@ -1,13 +1,13 @@
 if vim.loop.os_uname().sysname == "Darwin" then
 else
-    require 'nvim-treesitter.install'.compilers = { "gcc.exe" }
-end 
+    require 'nvim-treesitter.install'.compilers = { "gcc" }
+end
 local ensure
 if vim.loop.os_uname().sysname == "Darwin" then
     ensure = { "c", "lua", "vim", "c_sharp", "query", "http", "json", "js" }
 else
     ensure = { "c", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml", "javascript" }
-end 
+end
 -- local path = [[C:\Users\Elvhil\Maskinoppsett\]]
 -- vim.opt.runtimepath:append(path)
 require 'nvim-treesitter.configs'.setup {

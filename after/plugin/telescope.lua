@@ -2,13 +2,20 @@ local conf = require("telescope.config").values
 local finders = require "telescope.finders"
 local pickers = require "telescope.pickers"
 require'telescope'.load_extension('project')
-require'telescope'.load_extension('git_file_history')
+-- require'telescope'.load_extension('git_file_history')
 local builtin = require('telescope.builtin')
 local path;
-if vim.loop.os_uname().sysname == "Darwin" then
+local sitepath;
+if vim.loop.os_uname().sysname == "Darwin" or vim.loop.os_uname().sysname == "Linux" then
     path = "~/.config/nvim"
 else
     path = "C:\\Users\\ELVHIL\\AppData\\Local\\nvim"
+end
+
+if vim.loop.os_uname().sysname == "Darwin" or vim.loop.os_uname().sysname == "Linux" then
+    sitepath = "~/.local/share/nvim/"
+else
+    sitepath = "C:\\Users\\ELVHIL\\AppData\\Local\\nvim-data"
 end
 
 vim.keymap.set('n', '<leader>b', builtin.buffers, {})
@@ -17,6 +24,12 @@ vim.keymap.set('n', '<leader>c', function ()
     local config = {
         -- hidden = true,
         cwd = path
+    }
+    builtin.find_files(config)
+end, {})vim.keymap.set('n', '<leader>C', function ()
+    local config = {
+        -- hidden = true,
+        cwd = sitepath
     }
     builtin.find_files(config)
 end, {})
@@ -82,9 +95,6 @@ require("telescope").setup {
         },
         project = {
             base_dirs = {
-                "C:\\Users\\ELVHIL\\AppData\\Local\\nvim",
-                "C:\\Users\\ELVHIL\\fido",
-                "C:\\Users\\ELVHIL\\fido-v2",
             },
             hidden_files = true,
             theme = "dropdown",
@@ -95,4 +105,4 @@ require("telescope").setup {
 -- To get telescope-file-browser loaded and working with telescope,
 -- you need to call load_extension, somewhere after setup function:
 require("telescope").load_extension "file_browser"
-require("telescope").load_extension("git_file_history")
+-- require("telescope").load_extension("git_file_history")

@@ -14,7 +14,7 @@ vim.keymap.set("i", "<C-l>","<Right>")
 
 vim.keymap.set("n", "<leader>dg", ":Neogen<CR>")
 
-vim.keymap.set("n", "<leader>hs", function ()
+vim.keymap.set("n", "<leader>js", function ()
     vim.ui.input({prompt = "Enter a commitish>"}, function (input)
         vim.cmd("Gvdiffsplit " .. input )-- .." -- " .. vim.fn.expand("%"))
     end)
