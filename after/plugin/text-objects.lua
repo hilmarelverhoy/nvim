@@ -5,46 +5,120 @@ require'nvim-treesitter.configs'.setup {
             border = 'none',
             floating_preview_opts = {},
             peek_definition_code = {
-                ["<leader>of"] = "@function.outer",
-                ["<leader>oF"] = "@class.outer",
+                ["<leader>ob"] = "@block.inner",
+                ["<leader>ov"] = "@call.inner",
+                ["<leader>oc"] = "@class.inner",
+                ["<leader>oe"] = "@comment.outer", --inner not supported in cs
+                ["<leader>ou"] = "@conditional.inner",
+                ["<leader>of"] = "@function.inner",
+                ["<leader>ol"] = "@loop.inner",
+                ["<leader>o,"] = "@parameter.inner",
+                ["<leader>oob"] = "@block.outer",
+                ["<leader>oov"] = "@call.outer",
+                ["<leader>ooc"] = "@class.outer",
+                ["<leader>ooe"] = "@comment.outer", --inner not supported in cs
+                ["<leader>oou"] = "@conditional.outer",
+                ["<leader>oof"] = "@function.outer",
+                ["<leader>ool"] = "@loop.outer",
+                ["<leader>oo,"] = "@parameter.outer",
+                ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
         },
         -- block io b
         -- call io v
         -- class io c
-        -- comment o x
+        -- comment o e
         -- condition io i
         -- function io f
         -- loop io l
         -- param io ,
         --
-        --[ start
-        --] end
-        --lowercase inner
-        --uppercase outer
+        --[ next start
+        --] next end
+        -- inner
+        --add o outer
         move = {
             enable = true,
             set_jumps = true, -- whether to set jumps in the jumplist
             goto_next_start = {
-                ["[m"] = "@function.outer",
-                ["[["] = { query = "@class.outer", desc = "Next class start" },
-                ["[o"] = { query = { "@loop.inner", "@loop.outer" } },
-                ["[s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
+                ["[b"] = "@block.inner",
+                ["[v"] = "@call.inner",
+                ["[c"] = "@class.inner",
+                ["[e"] = "@comment.outer", --inner not supported in cs
+                ["[i"] = "@identifier.outer", --inner not supported in cs
+                ["[u"] = "@conditional.inner",
+                ["[f"] = "@function.inner",
+                ["[l"] = "@loop.inner",
+                ["[,"] = "@parameter.inner",
+                ["[ob"] = "@block.outer",
+                ["[ov"] = "@call.outer",
+                ["[oc"] = "@class.outer",
+                ["[oe"] = "@comment.outer", --inner not supported in cs
+                ["[ou"] = "@conditional.outer",
+                ["[of"] = "@function.outer",
+                ["[ol"] = "@loop.outer",
+                ["[o,"] = "@parameter.outer",
                 ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             goto_next_end = {
-                ["[M"] = "@function.outer",
-                ["[]"] = "@class.outer",
+                ["]b"] = "@block.inner",
+                ["]v"] = "@call.inner",
+                ["]c"] = "@class.inner",
+                ["]e"] = "@comment.outer", --inner not supported in cs
+                ["]i"] = "@identifier.outer", --inner not supported in cs
+                ["]u"] = "@conditional.inner",
+                ["]f"] = "@function.inner",
+                ["]l"] = "@loop.inner",
+                ["],"] = "@parameter.inner",
+                ["]ob"] = "@block.outer",
+                ["]ov"] = "@call.outer",
+                ["]oc"] = "@class.outer",
+                ["]oe"] = "@comment.outer", --inner not supported in cs
+                ["]ou"] = "@conditional.outer",
+                ["]of"] = "@function.outer",
+                ["]ol"] = "@loop.outer",
+                ["]o,"] = "@parameter.outer",
+                ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             goto_previous_start = {
-                ["]n"] = "@name",
-                ["]m"] = "@function.outer",
-                ["]["] = "@class.outer",
-                ["]s"] = { query = "@scope", query_group = "locals", desc = "Prev scope" },
+                ["[B"] = "@block.inner",
+                ["[V"] = "@call.inner",
+                ["[C"] = "@class.inner",
+                ["[E"] = "@comment.outer", --inner not supported in cs
+                ["[I"] = "@identifier.outer", --inner not supported in cs
+                ["[U"] = "@conditional.inner",
+                ["[F"] = "@function.inner",
+                ["[L"] = "@loop.inner",
+                ["[,"] = "@parameter.inner",
+                ["[oB"] = "@block.outer",
+                ["[oV"] = "@call.outer",
+                ["[oC"] = "@class.outer",
+                ["[oE"] = "@comment.outer", --inner not supported in cs
+                ["[oU"] = "@conditional.outer",
+                ["[oF"] = "@function.outer",
+                ["[oL"] = "@loop.outer",
+                ["[o,"] = "@parameter.outer",
+                ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             goto_previous_end = {
-                ["]M"] = "@function.outer",
-                ["]]"] = "@class.outer",
+                ["]B"] = "@block.inner",
+                ["]V"] = "@call.inner",
+                ["]C"] = "@class.inner",
+                ["]E"] = "@comment.outer", --inner not supported in cs
+                ["]I"] = "@identifier.outer", --inner not supported in cs
+                ["]U"] = "@conditional.inner",
+                ["]F"] = "@function.inner",
+                ["]L"] = "@loop.inner",
+                ["];"] = "@parameter.inner",
+                ["]oB"] = "@block.outer",
+                ["]oV"] = "@call.outer",
+                ["]oC"] = "@class.outer",
+                ["]oE"] = "@comment.outer", --inner not supported in cs
+                ["]oU"] = "@conditional.outer",
+                ["]oF"] = "@function.outer",
+                ["]oL"] = "@loop.outer",
+                ["]o;"] = "@parameter.outer",
+                ["]Z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             -- Below will go to either the start or the end, whichever is closer.
             -- Use if you want more granular movements
@@ -57,19 +131,26 @@ require'nvim-treesitter.configs'.setup {
 
             keymaps = {
                 -- You can use the capture groups defined in textobjects.scm
-                ["af"] = "@function.outer",
+                ["ib"] = "@block.inner",
+                ["iv"] = "@call.inner",
+                ["ic"] = "@class.inner",
+                ["ie"] = "@comment.outer", --inner not supported in cs
+                ["ii"] = "@identifier.outer", --inner not supported in cs
+                ["iu"] = "@conditional.inner",
                 ["if"] = "@function.inner",
+                ["il"] = "@loop.inner",
+                ["i,"] = "@parameter.inner",
+                ["ab"] = "@block.outer",
+                ["av"] = "@call.outer",
                 ["ac"] = "@class.outer",
-                -- You can optionally set descriptions to the mappings (used in the desc parameter of
-                -- nvim_buf_set_keymap) which plugins like which-key display
-                ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-                -- You can also use captures from other query groups like `locals.scm`
-                ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
-                ["a,"] = { query = "@parameter.outer", desc = "Parameter"},
-                ["i,"] = { query = "@parameter.inner", desc = "Parameter"},
-                ["aC"] = "@call.outer",
-                ["iC"] = "@call.inner",
-                ["a/"] = "@comment.outer",
+                ["ae"] = "@comment.outer", --inner not supported in cs
+                ["ai"] = "@identifier.outer", --inner not supported in cs
+                ["au"] = "@conditional.outer",
+                ["af"] = "@function.outer",
+                ["al"] = "@loop.outer",
+                ["a,"] = "@parameter.outer",
+                ["az"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                --
             },
             -- You can choose the select mode (default is charwise 'v')
             --
