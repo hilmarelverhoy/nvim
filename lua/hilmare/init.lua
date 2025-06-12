@@ -1,6 +1,7 @@
 require("hilmare.packer")
 require("hilmare.set")
 require("hilmare.remap")
+local ts_utils = require("nvim-treesitter.ts_utils")
 
 function MoveL()
     local opts = {}
@@ -116,7 +117,7 @@ function ReplaceTextInNode(node, change_func, bufnr)
         bufnr = 0
     end
     local x, y, z, w = node:range()
-    local text = vim.api.nvim_buf_get_text(bufnr, x, y, z,w, {})
+    local text = vim.api.nvim_buf_get_text(bufnr, x, y, z, w, {})
     local to_replace = change_func(text)
     vim.api.nvim_buf_set_text(bufnr, x,y,z,w, to_replace)
 end
@@ -226,6 +227,184 @@ function AddNullCheck()
     end
 
 end
+
+local function client_positional_params(params)
+  local win = vim.api.nvim_get_current_win()
+
+    local ret = vim.lsp.util.make_position_params(win, vim.lsp.client.offset_encoding)
+    if params then
+      ret = vim.tbl_extend('force', ret, params)
+    end
+    return ret
+end
+local function get_type_from_hover_result(results)
+    local type_definition
+    for client_id, resp in pairs(results) do
+        local err, result = resp.err, resp.result
+        if err then
+            vim.lsp.log.error(err.code, err.message)
+
+        elseif result then
+            local v = results[client_id]["result"]["contents"]["value"]
+            local b = string.sub(v, 4, #v -3):reverse()
+            local x = string.find(b, " ")
+            type_definition = b:sub(x+1):reverse()
+
+        end
+    end
+    vim.print(results)
+    if type == "" then
+        type_definition = vim.fn.input("Enter type:")
+    end
+    return type_definition
+end
+local function add_instance_property_under_node(node, type_identifier, name)
+            local _, indent_count,_,_ = node:range()
+            local indent = string.rep(" ", indent_count);
+            ReplaceTextInNode(node, function (text)
+                text[#text+1]=indent.."private readonly " .. type_identifier .. " _" ..name .. ";";
+                return text
+            end, 0)
+end
+local function add_parameter_to_constructor(parameter_list_node, parameter_before_node, type_identifier, name)
+            local parameter_list = GetTextFromNode(parameter_list_node)
+            if (#parameter_list > 1) then
+                local _, indent_count, using_end_row,using_end_col = parameter_before_node:range()
+                local indent = string.rep(" ", indent_count);
+                vim.api.nvim_buf_set_text(0, using_end_row, using_end_col, using_end_row,using_end_col+1,{ ","})
+                vim.api.nvim_buf_set_lines(0,using_end_row+1, using_end_row+1, false, {indent .. type_identifier .. " " .. name ..")"})
+            else
+                local _, _, using_end_col, using_end_row = parameter_before_node:range()
+                vim.api.nvim_buf_set_text(0, using_end_col, using_end_row, using_end_col,using_end_row,{ ", " .. type_identifier .." ".. name })
+            end
+end
+local function add_equals_expressions_after(node, type_identifier, name)
+    local _, indent_count, using_end_row,_ = node:range()
+            local indent = string.rep(" ", indent_count);
+            vim.api.nvim_buf_set_lines(0,using_end_row+1, using_end_row+1, false, {indent .. "_".. name .. " = " .. name ..";"})
+end
+function AddInstanceProperty()
+    vim.api.nvim_feedkeys("n","mZ",false)
+    vim.lsp.buf_request_all(0, vim.lsp.protocol.Methods.textDocument_hover, client_positional_params(), function(results, ctx)
+        local parser = vim.treesitter.get_parser(0,"c_sharp")
+        local tree = parser:parse()[1]
+        local query = vim.treesitter.query.parse("c_sharp",
+            [[
+(declaration_list
+  (field_declaration) @last_property
+    (constructor_declaration
+        (parameter_list  (parameter)@last_parameter .)@parameter_list
+        (block (_)? @last_expression .)))
+]])
+        -- TODO: Kan sjekke om 1 er større alfabetisk eller den siste som fallback
+        local cursor_node = ts_utils.get_node_at_cursor()
+        local type_identifier = get_type_from_hover_result(results);
+
+        local name = GetTextFromNode(cursor_node)[1];
+        for key, value, thing in query:iter_matches(tree:root(), 0) do
+            add_instance_property_under_node(value[1], type_identifier, name);
+            break
+        end
+        local last_parameter_node
+        local last_parameter_list_node
+        for key, value, thing in query:iter_captures(tree:root(), 0) do
+            if key == 2 then
+                last_parameter_node = value
+            elseif key == 3 then
+                last_parameter_list_node = value
+            end
+        end
+        add_parameter_to_constructor(last_parameter_list_node, last_parameter_node, type_identifier, name)
+        local last_assignment_node
+        for key, value, thing in query:iter_captures(tree:root(), 0) do
+            if key == 4 then
+                last_assignment_node = value
+            end
+        end
+        add_equals_expressions_after(last_assignment_node, type_identifier, name)
+        -- TODO bruk go to definition, og om det er en parameter, gjør det vi gjør her,
+        -- og om det er en statement, flytt 
+        vim.lsp.buf.rename("_" ..name)
+    end)
+    vim.api.nvim_feedkeys("n","`Z",false)
+end
+function move_code_to_function()
+    -- ask function name
+    -- add function below
+    -- list inputs
+    -- select return value
+    --
+    -- get end of this function
+    local _, ls, cs = unpack(vim.fn.getpos('v'))
+    local _, le, ce = unpack(vim.fn.getpos('.'))
+    -- spwap if wrong order
+    local query_string = "(identifier)@id"
+
+    local parser = vim.treesitter.get_parser(0,"c_sharp")
+    local tree = parser:parse()[1]
+    local query = vim.treesitter.query.parse("c_sharp", query_string)
+    vim.print(ls)
+    vim.print(le)
+
+    for i, value, _ in query:iter_captures(tree:root(), 0, ls, le) do
+        vim.print(GetTextFromNode(value))
+    end
+
+end
+vim.keymap.set("v", "øyf", move_code_to_function, {})
+
+function iter_captures(query_string)
+    local parser = vim.treesitter.get_parser(0,"c_sharp")
+    local tree = parser:parse()[1]
+    local query = vim.treesitter.query.parse("c_sharp", query_string)
+
+    return query:iter_captures(tree:root(), 0)
+end
+function iter_matches(query_string)
+    local parser = vim.treesitter.get_parser(0,"c_sharp")
+    local tree = parser:parse()[1]
+    local query = vim.treesitter.query.parse("c_sharp", query_string)
+
+    return query:iter_matches(tree:root(), 0)
+end
+local function do_things_with_type_from_identifier(node, action)
+    local t = client_positional_params()
+    local x, y, _, _= node:range()
+    t["position"]["character"] = y
+    t["position"]["line"] = x
+    vim.lsp.buf_request_all(0, vim.lsp.protocol.Methods.textDocument_hover, t, function(results, ctx)
+        local type_identifier = get_type_from_hover_result(results);
+        action(type_identifier)
+    end)
+end
+function ReplaceVarWithType()
+    vim.api.nvim_feedkeys("n","mZ",false)
+    local matches = iter_matches(
+        [[
+        (variable_declaration
+        type: (implicit_type) @var
+        (variable_declarator name: (identifier) @name
+            [(invocation_expression)
+            (member_access_expression)
+            (identifier)
+            (binary_expression)
+            (unary_expression)
+            (await_expression)
+            ]))
+]])
+    for i, match, _ in matches do
+        do_things_with_type_from_identifier(match[2], function (type_identifier)
+            ReplaceTextInNode(match[1], function (_)
+                return { type_identifier }
+            end)
+        end)
+
+    end
+    vim.api.nvim_feedkeys("n","`Z",false)
+end
+
+vim.keymap.set("n", "øi", AddInstanceProperty, {})
+vim.keymap.set("n", "øt", ReplaceVarWithType, {})
 function DoChanges()
     local parser = vim.treesitter.get_parser(0,"c_sharp")
     DoAsyncSessionStuff(parser)
@@ -601,6 +780,7 @@ function DeleteUsings()
     -- print(vim.inspect(capture))
     -- print(vim.inspect(metadata))
 end
+
 vim.ui.select = function(items, opts, on_choice)
     vim.validate({
         items = { items, 'table', false },
@@ -739,13 +919,20 @@ function remove_async()
         end
     end
 end
+
+local function wrap_query(query, nodes)
+    local ret  = "["
+    for _, node in pairs(nodes) do
+        ret = ret .. "(" .. node .." ".. query .. ") "
+    end
+    ret  = ret .. "]"
+    return ret
+end
 function remove_async_from_methodname()
     local parser = vim.treesitter.get_parser(0,"c_sharp")
     -- kanskje slette range
     local tree = parser:parse()[1]
-    local query = vim.treesitter.query.parse("c_sharp", [[
-[
-    (variable_declarator
+    local inner_query = [[
         (invocation_expression 
             function:  [
                 (identifier) @c(#match? @c ".*Async$")
@@ -754,68 +941,19 @@ function remove_async_from_methodname()
                         (generic_name
                             (identifier)@b(#match? @b ".*Async$"))
                         (identifier)@b(#match? @b ".*Async$")
-                    ])]))
-    (return_statement
-        (invocation_expression 
-            function:  [
-                (identifier) @c(#match? @c ".*Async$")
-                (member_access_expression 
-                    name: [
-                        (generic_name
-                            (identifier)@b(#match? @b ".*Async$"))
-                        (identifier)@b(#match? @b ".*Async$")
-                    ])]))
-    (if_statement
-        (invocation_expression 
-            function:  [
-                (identifier) @c(#match? @c ".*Async$")
-                (member_access_expression 
-                    name: [
-                        (generic_name
-                            (identifier)@b(#match? @b ".*Async$"))
-                        (identifier)@b(#match? @b ".*Async$")
-                    ])]))
-    (expression_statement
-        (invocation_expression 
-            function:  [
-                (identifier) @c(#match? @c ".*Async$")
-                (member_access_expression 
-                    name: [
-                        (generic_name
-                            (identifier)@b(#match? @b ".*Async$"))
-                        (identifier)@b(#match? @b ".*Async$")
-                    ])]))
-    (parenthesized_expression
-        (invocation_expression 
-            function:  [
-                (identifier) @c(#match? @c ".*Async$")
-                (member_access_expression 
-                    name: [
-                        (generic_name
-                            (identifier)@b(#match? @b ".*Async$"))
-                        (identifier)@b(#match? @b ".*Async$")
-                    ])]))
-    (lambda_expression
-        (invocation_expression 
-            function:  [
-                (identifier) @c(#match? @c ".*Async$")
-                (member_access_expression 
-                    name: [
-                        (generic_name
-                            (identifier)@b(#match? @b ".*Async$"))
-                        (identifier)@b(#match? @b ".*Async$")
-                    ])]))
-    (assignment_expression
-        (invocation_expression 
-            function:  [
-                (identifier) @c(#match? @c ".*Async$")
-                (member_access_expression 
-                    name: [
-                        (generic_name
-                            (identifier)@b(#match? @b ".*Async$"))
-                        (identifier)@b(#match? @b ".*Async$")
-                    ])]))
-]])
+                    ])])
+    ]]
+    local nodes = {
+        "variable_declarator",
+        "return_statement",
+        "if_statement",
+        "expression_statement",
+        "parenthesized_expression",
+        "lambda_expression",
+        "assignment_expression"
+    }
+    vim.print(wrap_query(inner_query, nodes))
+    local query = vim.treesitter.query.parse("c_sharp", wrap_query(inner_query, nodes))
     for i, match, metadata in query:iter_matches(tree:root(),0) do
         local the_node
         for j,node in pairs(match) do
@@ -894,6 +1032,10 @@ function add_async()
                 local generic = match[3]
                 local nullable = match[4]
                 local name = match[5]
+
+                local function add_async_task(t)
+                        return { "async Task<" .. t[1] ..">" }
+                end
                 ReplaceTextInNode(name, function (text)
                     local subbedText = text[1]:sub(-5,-1)
                     -- print(subbedText)
@@ -912,25 +1054,16 @@ function add_async()
                         end
                         ReplaceTextInNode(predefined, task)
                     else
-                        local function task(t)
-                            return { "async Task<" .. t[1] ..">" }
-                        end
-                        ReplaceTextInNode(predefined, task)
+                        ReplaceTextInNode(predefined, add_async_task)
                     end
 
                 elseif identifier ~= nil then
-                    local function task(t)
-                        return { "async Task<" .. t[1] ..">" }
-                    end
-                    ReplaceTextInNode(identifier, task)
+                    ReplaceTextInNode(identifier, add_async_task)
                 elseif generic ~= nil then
                     local text = GetTextFromNode(generic)[1]
                     local subbedText = text:sub(1,4)
                     if (subbedText ~= "Task") then
-                        local function task(t)
-                            return { "async Task<" .. t[1] ..">" }
-                        end
-                        ReplaceTextInNode(generic, task)
+                        ReplaceTextInNode(generic, add_async_task)
                     else
                         local function task(t)
                             return { "async ".. t[1]}
@@ -938,10 +1071,7 @@ function add_async()
                         ReplaceTextInNode(generic, task)
                     end
                 elseif nullable ~= nil then
-                    local function task(t)
-                        return { "async Task<" .. t[1] ..">" }
-                    end
-                    ReplaceTextInNode(nullable, task)
+                    ReplaceTextInNode(nullable, add_async_task)
                 end
             end
             return

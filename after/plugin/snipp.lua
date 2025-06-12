@@ -10,5 +10,5 @@ vim.keymap.set({"i", "s"}, "<C-n>", function()
 	end
 end, {silent = true})
 
-
+require("luasnip.loaders.from_vscode").lazy_load()
 require("luasnip.loaders.from_lua").load({paths = { "~/snippets" }})

@@ -6,7 +6,7 @@ local ensure
 if vim.loop.os_uname().sysname == "Darwin" then
     ensure = { "c", "lua", "vim", "c_sharp", "query", "http", "json", "js" }
 else
-    ensure = { "c", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml", "javascript" }
+    ensure = { "c", "dart", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml", "javascript", "python" }
 end
 -- local path = [[C:\Users\Elvhil\Maskinoppsett\]]
 -- vim.opt.runtimepath:append(path)

@@ -5,7 +5,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         -- these will be buffer-local keybindings
         -- because they only work if you have an active language server
-
+        
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, options)
         vim.keymap.set("n", "gd", vim.lsp.buf.definition, options)
         vim.keymap.set("n", "gD", vim.lsp.buf.declaration, options)
@@ -34,8 +34,10 @@ local default_setup = function(server)
         end
     })
 end
+
 require('mason').setup({})
 require('mason-lspconfig').setup({
+    automatic_enable = true,
     ensure_installed = {},
     handlers = {
         default_setup,
@@ -81,6 +83,19 @@ require('mason-lspconfig').setup({
     }
 
 })
+local util = require 'lspconfig.util'
+
+-- vim.lsp.start({
+--     name = 'dart-ls',
+--     cmd = { 'dart',
+--         'language-server',
+--         '--client-id',
+--         '--nvim.hilmare',
+--         '--client-version',
+--             '1.2' },
+--     root_dir = vim.fs.root(0, {'pubspec.yaml'}),
+--   filetypes = { 'dart' },
+--  })
 require("mason-nvim-dap").setup()
 
 -- require("roslyn").setup({
@@ -214,11 +229,26 @@ require"csharp".setup({
 -- })
 
 
+vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
+    pattern = {"*.dart"},
+    callback = function ()
+        vim.lsp.start({
+            name = 'dart-ls',
+            cmd = { 'dart',
+                'language-server',
+                '--client-id',
+                '--nvim.hilmare',
+                '--client-version',
+                '1.2' },
+            root_dir = vim.fs.root(0, {'pubspec.yaml'}),
+            filetypes = { 'dart' },
+        })
+    end
+})
 
 vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
     pattern = {"*.test"},
     callback = function ()
-        print("vføløjlfdsjgfdøklafjkldø")
         vim.lsp.start({
             name = 'hilmar_ls',
             cmd = {[[C:\Users\ELVHIL\hilmar_ls\bin\Release\net8.0\publish\hilmar_ls.exe]]},

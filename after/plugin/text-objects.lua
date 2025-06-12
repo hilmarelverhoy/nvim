@@ -24,23 +24,11 @@ require'nvim-treesitter.configs'.setup {
                 ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
         },
-        -- block io b
-        -- call io v
-        -- class io c
-        -- comment o e
-        -- condition io i
-        -- function io f
-        -- loop io l
-        -- param io ,
-        --
-        --[ next start
-        --] next end
-        -- inner
-        --add o outer
         move = {
             enable = true,
             set_jumps = true, -- whether to set jumps in the jumplist
             goto_next_start = {
+                ["[a"] = "@local.definition.var",
                 ["[b"] = "@block.inner",
                 ["[v"] = "@call.inner",
                 ["[c"] = "@class.inner",
@@ -50,17 +38,18 @@ require'nvim-treesitter.configs'.setup {
                 ["[f"] = "@function.inner",
                 ["[l"] = "@loop.inner",
                 ["[,"] = "@parameter.inner",
-                ["[ob"] = "@block.outer",
-                ["[ov"] = "@call.outer",
-                ["[oc"] = "@class.outer",
-                ["[oe"] = "@comment.outer", --inner not supported in cs
-                ["[ou"] = "@conditional.outer",
-                ["[of"] = "@function.outer",
-                ["[ol"] = "@loop.outer",
-                ["[o,"] = "@parameter.outer",
+                ["[B"] = "@block.outer",
+                ["[V"] = "@call.outer",
+                ["[C"] = "@class.outer",
+                ["[E"] = "@comment.outer", --inner not supported in cs
+                ["[U"] = "@conditional.outer",
+                ["[F"] = "@function.outer",
+                ["[L"] = "@loop.outer",
+                ["[;"] = "@parameter.outer",
                 ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             goto_next_end = {
+                ["]a"] = "@local.definition.var",
                 ["]b"] = "@block.inner",
                 ["]v"] = "@call.inner",
                 ["]c"] = "@class.inner",
@@ -70,55 +59,57 @@ require'nvim-treesitter.configs'.setup {
                 ["]f"] = "@function.inner",
                 ["]l"] = "@loop.inner",
                 ["],"] = "@parameter.inner",
-                ["]ob"] = "@block.outer",
-                ["]ov"] = "@call.outer",
-                ["]oc"] = "@class.outer",
-                ["]oe"] = "@comment.outer", --inner not supported in cs
-                ["]ou"] = "@conditional.outer",
-                ["]of"] = "@function.outer",
-                ["]ol"] = "@loop.outer",
-                ["]o,"] = "@parameter.outer",
+                ["]B"] = "@block.outer",
+                ["]V"] = "@call.outer",
+                ["]C"] = "@class.outer",
+                ["]E"] = "@comment.outer", --inner not supported in cs
+                ["]U"] = "@conditional.outer",
+                ["]F"] = "@function.outer",
+                ["]L"] = "@loop.outer",
+                ["];"] = "@parameter.outer",
                 ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             goto_previous_start = {
-                ["[B"] = "@block.inner",
-                ["[V"] = "@call.inner",
-                ["[C"] = "@class.inner",
-                ["[E"] = "@comment.outer", --inner not supported in cs
-                ["[I"] = "@identifier.outer", --inner not supported in cs
-                ["[U"] = "@conditional.inner",
-                ["[F"] = "@function.inner",
-                ["[L"] = "@loop.inner",
-                ["[,"] = "@parameter.inner",
-                ["[oB"] = "@block.outer",
-                ["[oV"] = "@call.outer",
-                ["[oC"] = "@class.outer",
-                ["[oE"] = "@comment.outer", --inner not supported in cs
-                ["[oU"] = "@conditional.outer",
-                ["[oF"] = "@function.outer",
-                ["[oL"] = "@loop.outer",
-                ["[o,"] = "@parameter.outer",
-                ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                ["g[a"] = "@local.definition.var",
+                ["g[b"] = "@block.inner",
+                ["g[v"] = "@call.inner",
+                ["g[c"] = "@class.inner",
+                ["g[e"] = "@comment.outer", --inner not supported in cs
+                ["g[i"] = "@identifier.outer", --inner not supported in cs
+                ["g[u"] = "@conditional.inner",
+                ["g[f"] = "@function.inner",
+                ["g[l"] = "@loop.inner",
+                ["g[,"] = "@parameter.inner",
+                ["g[B"] = "@block.outer",
+                ["g[V"] = "@call.outer",
+                ["g[C"] = "@class.outer",
+                ["g[E"] = "@comment.outer", --inner not supported in cs
+                ["g[U"] = "@conditional.outer",
+                ["g[F"] = "@function.outer",
+                ["g[L"] = "@loop.outer",
+                ["g[;"] = "@parameter.outer",
+                ["g[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             goto_previous_end = {
-                ["]B"] = "@block.inner",
-                ["]V"] = "@call.inner",
-                ["]C"] = "@class.inner",
-                ["]E"] = "@comment.outer", --inner not supported in cs
-                ["]I"] = "@identifier.outer", --inner not supported in cs
-                ["]U"] = "@conditional.inner",
-                ["]F"] = "@function.inner",
-                ["]L"] = "@loop.inner",
-                ["];"] = "@parameter.inner",
-                ["]oB"] = "@block.outer",
-                ["]oV"] = "@call.outer",
-                ["]oC"] = "@class.outer",
-                ["]oE"] = "@comment.outer", --inner not supported in cs
-                ["]oU"] = "@conditional.outer",
-                ["]oF"] = "@function.outer",
-                ["]oL"] = "@loop.outer",
-                ["]o;"] = "@parameter.outer",
-                ["]Z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                ["g]a"] = "@local.definition.var",
+                ["g]b"] = "@block.inner",
+                ["g]v"] = "@call.inner",
+                ["g]c"] = "@class.inner",
+                ["g]e"] = "@comment.outer", --inner not supported in cs
+                ["g]i"] = "@identifier.outer", --inner not supported in cs
+                ["g]u"] = "@conditional.inner",
+                ["g]f"] = "@function.inner",
+                ["g]l"] = "@loop.inner",
+                ["g],"] = "@parameter.inner",
+                ["g]B"] = "@block.outer",
+                ["g]V"] = "@call.outer",
+                ["g]C"] = "@class.outer",
+                ["g]E"] = "@comment.outer", --inner not supported in cs
+                ["g]U"] = "@conditional.outer",
+                ["g]F"] = "@function.outer",
+                ["g]L"] = "@loop.outer",
+                ["g];"] = "@parameter.outer",
+                ["g]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
             },
             -- Below will go to either the start or the end, whichever is closer.
             -- Use if you want more granular movements
