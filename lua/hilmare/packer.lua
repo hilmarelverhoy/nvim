@@ -5,9 +5,30 @@ vim.cmd('packadd packer.nvim')
 vim.cmd('packadd cfilter')
 
 return require('packer').startup(function(use)
-    -- Packer can manage itself
+    use {
+        "zbirenbaum/copilot.lua",
+        cmd = "Copilot",
+        event = "InsertEnter",
+        config = function()
+            require("copilot").setup({
+                suggestion = { enabled = false },
+                panel = { enabled = false },})
+        end,
+    }
+    use({
+    'ckolkey/ts-node-action',
+     config = function()
+         require("ts-node-action").setup({})
+     end
+})
+    use {
+        "zbirenbaum/copilot-cmp",
+        after = { "copilot.lua" },
+        config = function ()
+            require("copilot_cmp").setup()
+        end
+    }   -- Packer can manage itself
     use 'wbthomason/packer.nvim'
-    use 'seblj/roslyn.nvim'
     use {
         'nvim-telescope/telescope.nvim', tag = '0.1.4',
         -- or                            , branch = '0.1.x',
@@ -15,7 +36,7 @@ return require('packer').startup(function(use)
     }
     use {'nvim-telescope/telescope-project.nvim'}
     -- use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
-    use "~\\telescope-git-file-history.nvim"
+    -- use "~\\telescope-git-file-history.nvim"
     use "sindrets/diffview.nvim"
     use{"keyvchan/telescope-running-commands.nvim"}
     use {
@@ -91,13 +112,17 @@ return require('packer').startup(function(use)
             {'saadparwaiz1/cmp_luasnip'},
             {'hrsh7th/cmp-nvim-lsp'},
             {'hrsh7th/cmp-nvim-lua'},
-
+            { "onsails/lspkind.nvim" },
             -- Snippets
             {'L3MON4D3/LuaSnip'},
             {'rafamadriz/friendly-snippets'},
         }
     }
 
+    use { "seblj/nvim-lsp-extras" }
+    use {
+        'seblj/roslyn.nvim',
+    }
     use('andymass/vim-matchup')
 
     use({

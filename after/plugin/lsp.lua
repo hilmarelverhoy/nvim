@@ -34,6 +34,41 @@ local default_setup = function(server)
         end
     })
 end
+--require('roslyn').setup({
+--    config = {
+--        capabilities = lsp_capabilities,
+--        cmd = function()
+--            --- blir overskrevet
+--            ---@diagnostic disable-next-line: missing-return
+--        end,
+--        settings = {
+--            ["csharp|inlay_hints"] = {
+--                csharp_enable_inlay_hints_for_implicit_object_creation = true,
+--                csharp_enable_inlay_hints_for_implicit_variable_types = true,
+--                csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+--                csharp_enable_inlay_hints_for_types = true,
+--                dotnet_enable_inlay_hints_for_indexer_parameters = true,
+--                dotnet_enable_inlay_hints_for_literal_parameters = true,
+--                dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+--                dotnet_enable_inlay_hints_for_other_parameters = true,
+--                dotnet_enable_inlay_hints_for_parameters = true,
+--                dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
+--                dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
+--                dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
+--            },
+--            ["csharp|code_lens"] = {
+--                dotnet_enable_references_code_lens = true,
+--            },
+--        },
+--        choose_sln = function(sln)
+--            return vim.iter(sln):find(function(item)
+--                if string.match(item, "DoffinApi.sln") then
+--                    return item
+--                end
+--            end)
+--        end,
+--    }
+--})
 require('mason').setup({})
 require('mason-lspconfig').setup({
     ensure_installed = {},
@@ -77,7 +112,15 @@ require('mason-lspconfig').setup({
                 }
 
             })
-        end
+        end,
+        -- basedpyright = function()
+        --     -- Diagnostic settings
+        --     vim.diagnostic.config {
+        --         virtual_text = false,
+        --         signs = false,
+        --         underline = true,
+        --     }
+        -- end
     }
 
 })
@@ -94,7 +137,7 @@ require("mason-nvim-dap").setup()
 --             client.is_hacked = true
 
 --             -- let the runtime know the server can do semanticTokens/full now
-            -- client.server_capabilities = vim.tbl_deep_extend("force", client.server_capabilities, {
+-- client.server_capabilities = vim.tbl_deep_extend("force", client.server_capabilities, {
 --                 semanticTokensProvider = {
 --                     full = true,
 --                 },
@@ -177,8 +220,10 @@ cmp.setup({
     }),
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
+        { name = "copilot", group_index = 2 },
         { name = 'luasnip' },
-        { name = 'buffer' },
+        { name = "buffer", option = { keyword_pattern = [[\k\+]] } },
+        { name = "path" },
     })
 })
 -- vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {

@@ -4,7 +4,7 @@ else
 end 
 local ensure
 if vim.loop.os_uname().sysname == "Darwin" then
-    ensure = { "c", "lua", "vim", "c_sharp", "query", "http", "json", "js" }
+    ensure = { "c", "lua", "vim", "c_sharp", "query", "http", "json","yaml" }
 else
     ensure = { "c", "lua", "vim", "vimdoc", "c_sharp", "query", "http", "json", "xml", "javascript" }
 end 
