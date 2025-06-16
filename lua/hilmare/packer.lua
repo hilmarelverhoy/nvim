@@ -3,7 +3,7 @@
 -- Only required if you have packer configured as `opt`
 vim.cmd('packadd packer.nvim')
 vim.cmd('packadd cfilter')
-
+require('CopilotChat').setup({})
 return require('packer').startup(function(use)
     use {
         "zbirenbaum/copilot.lua",
@@ -28,6 +28,13 @@ return require('packer').startup(function(use)
             require("copilot_cmp").setup()
         end
     }   -- Packer can manage itself
+
+    use 'ThePrimeagen/vim-be-good'
+    use {
+        'ldelossa/gh.nvim',
+        requires = { { 'ldelossa/litee.nvim' } }
+    }
+    use 'mracos/mermaid.vim'
     use 'wbthomason/packer.nvim'
     use {
         'nvim-telescope/telescope.nvim', tag = '0.1.4',
@@ -35,10 +42,9 @@ return require('packer').startup(function(use)
         requires = { {'nvim-lua/plenary.nvim'} }
     }
     use {'nvim-telescope/telescope-project.nvim'}
-    -- use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
+    use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
     -- use "~\\telescope-git-file-history.nvim"
     use "sindrets/diffview.nvim"
-    use{"keyvchan/telescope-running-commands.nvim"}
     use {
         "nvim-telescope/telescope-file-browser.nvim",
         requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
@@ -74,7 +80,6 @@ return require('packer').startup(function(use)
         -- Uncomment next line if you want to follow only stable versions
         tag = "*"
     }
-    use {"folke/neodev.nvim"}
     use {
         "nvim-neotest/neotest",
         requires = {
@@ -125,6 +130,10 @@ return require('packer').startup(function(use)
     }
     use('andymass/vim-matchup')
 
+    use{"iabdelkareem/csharp.nvim",
+        requires = {
+            "Tastyep/structlog.nvim"
+        }}
     use({
         'EdenEast/nightfox.nvim',
         as = 'nightfox',
@@ -185,4 +194,5 @@ return require('packer').startup(function(use)
             })
         end
     }
+
 end)

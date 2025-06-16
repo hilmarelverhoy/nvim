@@ -10,7 +10,7 @@ vim.opt.ignorecase=true
 vim.opt.smartcase=true
 -- vim.opt.smartindent=true
 vim.opt.list=true
-vim.opt.listchars="tab:>-,trail:·"
+vim.opt.listchars="tab:-> ,trail:·,nbsp:·"
 
 vim.opt.autoindent = true
 vim.opt.clipboard="unnamedplus"
@@ -44,3 +44,4 @@ vim.opt.number = true
 vim.opt.rnu = true
 
 vim.opt.fixeol = false
+vim.opt.wrap = false

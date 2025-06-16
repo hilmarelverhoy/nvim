@@ -5,7 +5,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         -- these will be buffer-local keybindings
         -- because they only work if you have an active language server
-
+        
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, options)
         vim.keymap.set("n", "gd", vim.lsp.buf.definition, options)
         vim.keymap.set("n", "gD", vim.lsp.buf.declaration, options)
@@ -34,43 +34,9 @@ local default_setup = function(server)
         end
     })
 end
---require('roslyn').setup({
---    config = {
---        capabilities = lsp_capabilities,
---        cmd = function()
---            --- blir overskrevet
---            ---@diagnostic disable-next-line: missing-return
---        end,
---        settings = {
---            ["csharp|inlay_hints"] = {
---                csharp_enable_inlay_hints_for_implicit_object_creation = true,
---                csharp_enable_inlay_hints_for_implicit_variable_types = true,
---                csharp_enable_inlay_hints_for_lambda_parameter_types = true,
---                csharp_enable_inlay_hints_for_types = true,
---                dotnet_enable_inlay_hints_for_indexer_parameters = true,
---                dotnet_enable_inlay_hints_for_literal_parameters = true,
---                dotnet_enable_inlay_hints_for_object_creation_parameters = true,
---                dotnet_enable_inlay_hints_for_other_parameters = true,
---                dotnet_enable_inlay_hints_for_parameters = true,
---                dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
---                dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
---                dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
---            },
---            ["csharp|code_lens"] = {
---                dotnet_enable_references_code_lens = true,
---            },
---        },
---        choose_sln = function(sln)
---            return vim.iter(sln):find(function(item)
---                if string.match(item, "DoffinApi.sln") then
---                    return item
---                end
---            end)
---        end,
---    }
---})
 require('mason').setup({})
 require('mason-lspconfig').setup({
+    automatic_enable = true,
     ensure_installed = {},
     handlers = {
         default_setup,
@@ -124,6 +90,19 @@ require('mason-lspconfig').setup({
     }
 
 })
+local util = require 'lspconfig.util'
+
+-- vim.lsp.start({
+--     name = 'dart-ls',
+--     cmd = { 'dart',
+--         'language-server',
+--         '--client-id',
+--         '--nvim.hilmare',
+--         '--client-version',
+--             '1.2' },
+--     root_dir = vim.fs.root(0, {'pubspec.yaml'}),
+--   filetypes = { 'dart' },
+--  })
 require("mason-nvim-dap").setup()
 
 -- require("roslyn").setup({
@@ -226,6 +205,16 @@ cmp.setup({
         { name = "path" },
     })
 })
+require"csharp".setup({
+    lsp = {
+        roslyn = {
+            enable = false,
+            cmd_path = [[C:\Users\ELVHIL\AppData\Local\nvim-data\mason\bin\csharp-ls.CMD]]
+        }
+
+    },
+    capabilities = lsp_capabilities,
+})
 -- vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
 --     pattern = {"*.cs"},
 --     callback = function ()
@@ -249,11 +238,26 @@ cmp.setup({
 -- })
 
 
+vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
+    pattern = {"*.dart"},
+    callback = function ()
+        vim.lsp.start({
+            name = 'dart-ls',
+            cmd = { 'dart',
+                'language-server',
+                '--client-id',
+                '--nvim.hilmare',
+                '--client-version',
+                '1.2' },
+            root_dir = vim.fs.root(0, {'pubspec.yaml'}),
+            filetypes = { 'dart' },
+        })
+    end
+})
 
 vim.api.nvim_create_autocmd({"BufEnter","BufWinEnter"}, {
     pattern = {"*.test"},
     callback = function ()
-        print("vføløjlfdsjgfdøklafjkldø")
         vim.lsp.start({
             name = 'hilmar_ls',
             cmd = {[[C:\Users\ELVHIL\hilmar_ls\bin\Release\net8.0\publish\hilmar_ls.exe]]},
