@@ -109,43 +109,43 @@ require("telescope").setup {
 require("telescope").load_extension "file_browser"
 -- require("telescope").load_extension("git_file_history")
 -- This is your opts table
-require("telescope").setup {
-    extensions = {
-        ["ui-select"] = {
-            require("telescope.themes").get_dropdown {
-                -- even more opts
-            },
+--require("telescope").setup {
+--    extensions = {
+--        ["ui-select"] = {
+--            require("telescope.themes").get_dropdown {
+--                -- even more opts
+--            },
 
-            -- pseudo code / specification for writing custom displays, like the one
-            -- for "codeaction"
-            --specific_opts = {
-            --    ["codeaction"] = {
-            --        make_indexed = function(items)
-            --            local indexed_items = {}
-            --            local width = 10
-            --            for i, item in ipairs(items) do
-            --                print(item)
-            --                table.insert(indexed_items, {
-            --                    idx = i,
-            --                    text = item
-            --                })
-            --            end
-            --            return indexed_items, width
-            --        end,
-            --        -- make_displayer = function(widths) -> displayer
-            --        -- make_display = function(displayer) -> function(e)
+--            -- pseudo code / specification for writing custom displays, like the one
+--            -- for "codeaction"
+--            --specific_opts = {
+--            --    ["codeaction"] = {
+--            --        make_indexed = function(items)
+--            --            local indexed_items = {}
+--            --            local width = 10
+--            --            for i, item in ipairs(items) do
+--            --                print(item)
+--            --                table.insert(indexed_items, {
+--            --                    idx = i,
+--            --                    text = item
+--            --                })
+--            --            end
+--            --            return indexed_items, width
+--            --        end,
+--            --        -- make_displayer = function(widths) -> displayer
+--            --        -- make_display = function(displayer) -> function(e)
 
-            --        make_ordinal = function(e)
-            --            -- vim.print(e)
-            --            return e.idx
-            --        end,
-            --    },
-            --    -- for example to disable the custom builtin "codeactions" display
-            --    --do the following
-            --}
-        }
-    }
-}
+--            --        make_ordinal = function(e)
+--            --            -- vim.print(e)
+--            --            return e.idx
+--            --        end,
+--            --    },
+--            --    -- for example to disable the custom builtin "codeactions" display
+--            --    --do the following
+--            --}
+--        }
+--    }
+--}
 -- To get ui-select loaded and working with telescope, you need to call
 -- load_extension, somewhere after setup function:
-require("telescope").load_extension("ui-select")
+-- require("telescope").load_extension("ui-select")

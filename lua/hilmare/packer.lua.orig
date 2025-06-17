@@ -3,8 +3,9 @@
 -- Only required if you have packer configured as `opt`
 vim.cmd('packadd packer.nvim')
 vim.cmd('packadd cfilter')
--- require('CopilotChat').setup({})
+require('CopilotChat').setup({})
 return require('packer').startup(function(use)
+<<<<<<< HEAD
     use {
         "zbirenbaum/copilot.lua",
         cmd = "Copilot",
@@ -28,6 +29,7 @@ return require('packer').startup(function(use)
             require("copilot_cmp").setup()
         end
     }   -- Packer can manage itself
+=======
 
     use 'ThePrimeagen/vim-be-good'
     use {
@@ -35,6 +37,7 @@ return require('packer').startup(function(use)
         requires = { { 'ldelossa/litee.nvim' } }
     }
     use 'mracos/mermaid.vim'
+>>>>>>> c2f0ce565dbaac16090b98bb87b52b0fa6e2de24
     use 'wbthomason/packer.nvim'
     use {
         'nvim-telescope/telescope.nvim', tag = '0.1.4',
@@ -42,7 +45,12 @@ return require('packer').startup(function(use)
         requires = { {'nvim-lua/plenary.nvim'} }
     }
     use {'nvim-telescope/telescope-project.nvim'}
+<<<<<<< HEAD
+    -- use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
+=======
+    -- use {'nvim-telescope/telescope-ui-select.nvim'}
     use({"isak102/telescope-git-file-history.nvim"})-- use("nathom/filetype.nvim")
+>>>>>>> c2f0ce565dbaac16090b98bb87b52b0fa6e2de24
     -- use "~\\telescope-git-file-history.nvim"
     use "sindrets/diffview.nvim"
     use {
