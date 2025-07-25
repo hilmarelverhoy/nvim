@@ -20,7 +20,12 @@ return require('packer').startup(function(use)
      config = function()
          require("ts-node-action").setup({})
      end
-})
+    })
+    use {
+        'HallerPatrick/py_lsp.nvim',
+        -- Support for versioning
+        -- tag = "v0.0.1" 
+    }
     use {
         "zbirenbaum/copilot-cmp",
         after = { "copilot.lua" },
@@ -129,6 +134,8 @@ return require('packer').startup(function(use)
         'seblj/roslyn.nvim',
     }
     use('andymass/vim-matchup')
+    use('folke/snacks.nvim')
+    use("coder/claudecode.nvim")
 
     use{"iabdelkareem/csharp.nvim",
         requires = {

@@ -150,10 +150,10 @@ local function goto_parent_node()
         next = next:parent()
     end
 end
-vim.keymap.set("n","øcn",function ()
+vim.keymap.set("n","øgn",function ()
     goto_name_identifier2()
 end,{})
-vim.keymap.set("n","øct",function ()
+vim.keymap.set("n","øgt",function ()
     goto_parent_node()
 end,{})
 local function get_class_name()
