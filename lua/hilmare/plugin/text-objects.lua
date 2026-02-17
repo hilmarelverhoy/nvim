@@ -28,7 +28,6 @@ require'nvim-treesitter.configs'.setup {
             enable = true,
             set_jumps = true, -- whether to set jumps in the jumplist
             goto_next_start = {
-                ["[a"] = "@local.definition.var",
                 ["[b"] = "@block.inner",
                 ["[v"] = "@call.inner",
                 ["[c"] = "@class.inner",
@@ -36,7 +35,7 @@ require'nvim-treesitter.configs'.setup {
                 ["[i"] = "@identifier.outer", --inner not supported in cs
                 ["[u"] = "@conditional.inner",
                 ["[f"] = "@function.inner",
-                ["[l"] = "@loop.inner",
+                ["[lo"] = "@loop.inner",
                 ["[,"] = "@parameter.inner",
                 ["[B"] = "@block.outer",
                 ["[V"] = "@call.outer",
@@ -44,12 +43,15 @@ require'nvim-treesitter.configs'.setup {
                 ["[E"] = "@comment.outer", --inner not supported in cs
                 ["[U"] = "@conditional.outer",
                 ["[F"] = "@function.outer",
-                ["[L"] = "@loop.outer",
+                ["[LO"] = "@loop.outer",
                 ["[;"] = "@parameter.outer",
                 ["[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                ["[rhs"] = "@assignment.rhs",
+                ["[lhs"] = "@assignment.lhs",
+                ["[ai"] = "@assignment.inner",
+                ["[ao"] = "@assignment.outer",
             },
             goto_next_end = {
-                ["]a"] = "@local.definition.var",
                 ["]b"] = "@block.inner",
                 ["]v"] = "@call.inner",
                 ["]c"] = "@class.inner",
@@ -57,7 +59,7 @@ require'nvim-treesitter.configs'.setup {
                 ["]i"] = "@identifier.outer", --inner not supported in cs
                 ["]u"] = "@conditional.inner",
                 ["]f"] = "@function.inner",
-                ["]l"] = "@loop.inner",
+                ["]lo"] = "@loop.inner",
                 ["],"] = "@parameter.inner",
                 ["]B"] = "@block.outer",
                 ["]V"] = "@call.outer",
@@ -65,12 +67,15 @@ require'nvim-treesitter.configs'.setup {
                 ["]E"] = "@comment.outer", --inner not supported in cs
                 ["]U"] = "@conditional.outer",
                 ["]F"] = "@function.outer",
-                ["]L"] = "@loop.outer",
+                ["]LO"] = "@loop.outer",
                 ["];"] = "@parameter.outer",
                 ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                ["]rhs"] = "@assignment.rhs",
+                ["]lhs"] = "@assignment.lhs",
+                ["]ai"] = "@assignment.inner",
+                ["]ao"] = "@assignment.outer",
             },
             goto_previous_start = {
-                ["g[a"] = "@local.definition.var",
                 ["g[b"] = "@block.inner",
                 ["g[v"] = "@call.inner",
                 ["g[c"] = "@class.inner",
@@ -86,12 +91,15 @@ require'nvim-treesitter.configs'.setup {
                 ["g[E"] = "@comment.outer", --inner not supported in cs
                 ["g[U"] = "@conditional.outer",
                 ["g[F"] = "@function.outer",
-                ["g[L"] = "@loop.outer",
+                ["g[LO"] = "@loop.outer",
                 ["g[;"] = "@parameter.outer",
                 ["g[z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                ["g[rhs"] = "@assignment.rhs",
+                ["g[lhs"] = "@assignment.lhs",
+                ["g[ai"] = "@assignment.inner",
+                ["g[ao"] = "@assignment.outer",
             },
             goto_previous_end = {
-                ["g]a"] = "@local.definition.var",
                 ["g]b"] = "@block.inner",
                 ["g]v"] = "@call.inner",
                 ["g]c"] = "@class.inner",
@@ -110,6 +118,10 @@ require'nvim-treesitter.configs'.setup {
                 ["g]L"] = "@loop.outer",
                 ["g];"] = "@parameter.outer",
                 ["g]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                ["g]rhs"] = "@assignment.rhs",
+                ["g]lhs"] = "@assignment.lhs",
+                ["g]ai"] = "@assignment.inner",
+                ["g]ao"] = "@assignment.outer",
             },
             -- Below will go to either the start or the end, whichever is closer.
             -- Use if you want more granular movements

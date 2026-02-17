@@ -1,5 +1,4 @@
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-local util = require('lspconfig.util')
 local cmp = require('cmp')
 
 local function setup_lsp_keymaps(event)
@@ -21,34 +20,30 @@ local function setup_lsp_keymaps(event)
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, options)
     vim.keymap.set('i', '<C-h>', vim.lsp.buf.signature_help, options)
 end
-
+-- vim.lsp.config('basedpyright', { root_markers = {'.git'} })
+-- require("venv-lsp").setup()
 vim.api.nvim_create_autocmd('LspAttach', {
     desc = 'LSP actions',
     callback = setup_lsp_keymaps
 })
 
-local default_setup = function(server)
-    require('lspconfig')[server].setup({
-        capabilities = lsp_capabilities,
-        on_attach = function(client, bufnr)
-        end
-    })
-end
 
-local function setup_pyright_ls()
-    require('lspconfig').basedpyright.setup({
+local function setup_pyright_ls(server_name)
+    vim.lsp.config(server_name, {
+        cmd = { 'basedpyright-langserver', '--stdio' },
+        filetypes = { 'python' },
+        root_markers = { '.git', 'pyproject.toml', 'setup.py', 'requirements.txt' },
         capabilities = lsp_capabilities,
         on_attach = function(client, bufnr)
-            client.server_capabilities.definitionProvider = false
+            client.server_capabilities.definitionProvider = true
         end,
         settings = {
             basedpyright = {
                 analysis = {
                     typeCheckingMode = 'basic',
-                    autoSearchPaths = true,
                     useLibraryCodeForTypes = true,
                     autoImportCompletionsd= true,
-                    autoSearchPaths= true,
+                    autoSearchPaths= false,
                     baselineFile                    = "",
                     diagnosticMode                  = "nFilesOnly",
                     diagnosticSeverityOverrides = {
@@ -173,14 +168,17 @@ local function setup_pyright_ls()
                 stubPath              = "typings",
                 typeCheckingMode      = "recommended",
                 typeshedPaths         ={},
-                useLibraryCodeForTypes= true,
                 useTypingExtensions   = false
             },
         },
     })
+    vim.lsp.enable(server_name)
 end
-local function setup_lua_ls()
-    require('lspconfig').lua_ls.setup({
+local function setup_lua_ls(server_name)
+    vim.lsp.config(server_name, {
+        cmd = { 'lua-language-server' },
+        filetypes = { 'lua' },
+        root_markers = { '.git', '.luarc.json' },
         capabilities = lsp_capabilities,
         settings = {
             Lua = {
@@ -195,17 +193,79 @@ local function setup_lua_ls()
             },
         },
     })
+    vim.lsp.enable(server_name)
 end
-
-local function setup_csharp_ls()
-    require('lspconfig').csharp_ls.setup({
+local function get_commit_messave()
+   
+end
+local function setup_csharp_ls(server_name)
+    vim.lsp.config(server_name, {
+        cmd = { 'csharp-ls' },
+        filetypes = { 'csharp' },
+        root_markers = { '.git', 'sln', 'csproj' },
         capabilities = vim.tbl_deep_extend("force", lsp_capabilities, {
             semanticTokensProvider = { full = true }
         }),
     })
+    vim.lsp.enable(server_name)
+end
+local default_setup = function(server)
+    vim.lsp.config(server, {
+        capabilities = lsp_capabilities,
+        on_attach = function(client, bufnr)
+        end
+    })
+    vim.lsp.enable(server)
 end
 
-require('mason').setup({})
+local function setup_ty_ls(server_name)
+    -- Detect virtual environment
+    local function get_python_path(workspace)
+        -- Check for venv in workspace
+        local venv_path = workspace .. '/venv/bin/python'
+        if vim.fn.executable(venv_path) == 1 then
+            return venv_path
+        end
+        -- Fallback to system python
+        return vim.fn.exepath('python3') or vim.fn.exepath('python') or 'python'
+    end
+
+    -- Configure the server
+    vim.lsp.config(server_name, {
+        capabilities = lsp_capabilities,
+        cmd = { 'ty' }, -- Ensure the 'ty' command is in your PATH
+        filetypes = { 'python' },
+        root_markers = { '.git', 'pyproject.toml', 'setup.py', '.ty-root', 'pyrightconfig.json' },
+        single_file_support = true,
+        before_init = function(params)
+            local workspace = params.workspaceFolders and params.workspaceFolders[1] and params.workspaceFolders[1].name or vim.fn.getcwd()
+            params.initializationOptions = params.initializationOptions or {}
+            params.initializationOptions.settings = params.initializationOptions.settings or {}
+            -- params.initializationOptions.settings.python = {
+            --     pythonPath = get_python_path(workspace),
+            --     venvPath = workspace,
+            --     venv = '.venv'
+            -- }
+        end,
+        settings = {
+            python = {
+                pythonPath = get_python_path(vim.fn.getcwd()),
+                venvPath = vim.fn.getcwd(),
+                venv = 'venv'
+            }
+        }
+    })
+    
+    -- Enable the server after configuration
+    vim.lsp.enable(server_name)
+end
+
+require("mason").setup({
+    registries = {
+        "github:mason-org/mason-registry",
+        "github:Crashdummyy/mason-registry",
+    },
+})
 require('mason-lspconfig').setup({
     automatic_enable = true,
     ensure_installed = {},
@@ -216,6 +276,50 @@ require('mason-lspconfig').setup({
         basedpyright = setup_pyright_ls,
     }
 })
+
+-- Setup ty server (not managed by Mason)
+-- Configure first
+local function get_python_path(workspace)
+    local venv_path = workspace .. '/venv/bin/python'
+    if vim.fn.executable(venv_path) == 1 then
+        return venv_path
+    end
+    return vim.fn.exepath('python3') or vim.fn.exepath('python') or 'python'
+end
+
+vim.lsp.config('ty', {
+    capabilities = lsp_capabilities,
+    cmd = { 'ty', 'server' },
+    filetypes = { 'python' },
+    root_markers = { '.git', 'pyproject.toml', 'setup.py', '.ty-root', 'pyrightconfig.json' },
+    single_file_support = true,
+    before_init = function(params)
+        
+        local workspace = params.workspaceFolders and params.workspaceFolders[1] and params.workspaceFolders[1].name or vim.fn.getcwd()
+        
+        params.initializationOptions = params.initializationOptions or {}
+        params.initializationOptions.settings = params.initializationOptions.settings or {}
+        params.initializationOptions.settings.python = {
+            pythonPath = get_python_path(workspace),
+            venvPath = workspace,
+            venv = 'venv'
+        }
+        
+    end,
+    on_init = function(client, result)
+    end,
+    settings = {
+        python = {
+            pythonPath = get_python_path(vim.fn.getcwd()),
+            venvPath = vim.fn.getcwd(),
+            venv = 'venv'
+        }
+    }
+})
+
+-- Enable it
+vim.lsp.enable('ty')
+
 require("mason-nvim-dap").setup()
 local cmp_select = { behavior = cmp.SelectBehavior.Select }
 

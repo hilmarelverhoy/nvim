@@ -10,16 +10,16 @@ function explode(div,str)
     return arr
 end
 -- vim.api.nvim_buf_set_lines(0,16,16,false,T);
-            vim.diagnostic.config {
-                virtual_lines = false,
-                virtual_text = false,
-                underline = false,
-                severity_sort = true,
-                float = {
-                    focusable = true,
-                    style = "minimal",
-                    border = "rounded",
-                    source = "if_many",
-                    header = "Diagnostics",
-                },
-            }
+vim.diagnostic.config {
+    virtual_lines = false,
+    virtual_text = false,
+    underline = false,
+    severity_sort = true,
+    float = {
+        focusable = true,
+        style = "minimal",
+        border = "rounded",
+        source = "if_many",
+        header = "Diagnostics",
+    },
+}

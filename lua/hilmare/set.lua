@@ -45,3 +45,4 @@ vim.opt.rnu = true
 
 vim.opt.fixeol = false
 vim.opt.wrap = false
+vim.opt.mouse = ""

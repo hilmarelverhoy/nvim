@@ -34,7 +34,10 @@ function M.setup_ui_select()
         opts = opts or {}
         local choices = { opts.prompt.."\n" or 'Select one of:\n' }
         local format_item = opts.format_item or tostring
-        local input_letters = {"a","s","d","f","g","h","j","k","l","ø","aa","as","ad","af","ag","ah","aj","ak","al","aø"}
+        local input_letters = {"a","s","d","f","g","h","j","k","l","ø",
+                                "aa","as","ad","af","ag","ah","aj","ak","al","aø",
+                                "da","ds","dd","df","dg","dh","dj","dk","dl","dø",
+                                "fa","fs","fd","ff","fg","fh","fj","fk","fl","fø"}
         
         for i, item in pairs(items) do
             table.insert(choices, string.format('[ %s ]: %s\n', input_letters[i], format_item(item)))

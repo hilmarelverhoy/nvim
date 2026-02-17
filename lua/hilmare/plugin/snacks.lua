@@ -1,5 +1,4 @@
 local i =require('snacks')
-print(i)
 i.setup({
     {
     bigfile = { enabled = true },

@@ -12,6 +12,41 @@ require('dap-python').setup('python')
 dap.configurations.python = {
   {
     type = 'python',
+    request = 'attach',
+    name = 'Attach to Docker (Django)',
+    connect = {
+      host = '127.0.0.1',
+      port = 5678,
+    },
+    cwd = vim.fn.getcwd(),
+    pathMappings = {
+      {
+        localRoot = "${workspaceFolder}",
+        remoteRoot = "/usr/src/app"
+      },
+    },
+    justMyCode = false,
+    django = true,
+  },
+  {
+    type = 'python',
+    request = 'attach',
+    name = 'Attach to Docker (Celery)',
+    connect = {
+      host = '127.0.0.1',
+      port = 5679,
+    },
+    cwd = vim.fn.getcwd(),
+    pathMappings = {
+      {
+        localRoot = "${workspaceFolder}",
+        remoteRoot = "/usr/src/app"
+      },
+    },
+    justMyCode = false,
+  },
+  {
+    type = 'python',
     request = 'launch',
     name = "Django Tests",
     program = "${workspaceFolder}/manage.py",

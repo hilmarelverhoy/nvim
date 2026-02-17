@@ -1,6 +1,8 @@
-require("hilmare.packer")
+require("hilmare.lazy")
 require("hilmare.set")
 require("hilmare.remap")
+require("hilmare.plugin")
+local ts_utils = require("nvim-treesitter")
 local ts_utils = require("nvim-treesitter.ts_utils")
 
 function MoveL()
@@ -403,8 +405,8 @@ function ReplaceVarWithType()
     vim.api.nvim_feedkeys("n","`Z",false)
 end
 
-vim.keymap.set("n", "øi", AddInstanceProperty, {})
-vim.keymap.set("n", "øt", ReplaceVarWithType, {})
+-- vim.keymap.set("n", "øi", AddInstanceProperty, {})
+-- vim.keymap.set("n", "øt", ReplaceVarWithType, {})
 function DoChanges()
     local parser = vim.treesitter.get_parser(0,"c_sharp")
     DoAsyncSessionStuff(parser)
